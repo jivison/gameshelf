@@ -1,15 +1,12 @@
-# Welcome to Revel
+# Welcome to Gameshelf
 
-A high-productivity web framework for the [Go language](http://www.golang.org/).
+Built with revel, a high-productivity web framework for the [Go language](http://www.golang.org/).
 
 
 ### Start the web server:
 
-   revel run myapp
+    revel run gameshelf
 
-### Go to http://localhost:9000/ and you'll see:
-
-    "It works"
 
 ## Code Layout
 
@@ -23,6 +20,8 @@ The directory structure of a generated Revel application:
         init.go       Interceptor registration
         controllers/  App controllers go here
         views/        Templates directory
+        models/       App models go here
+            init.go   Database configuration
 
     messages/         Message files
 
@@ -33,11 +32,4 @@ The directory structure of a generated Revel application:
 
     tests/            Test suites
 
-
-## Help
-
-* The [Getting Started with Revel](http://revel.github.io/tutorial/gettingstarted.html).
-* The [Revel guides](http://revel.github.io/manual/index.html).
-* The [Revel sample apps](http://revel.github.io/examples/index.html).
-* The [API documentation](https://godoc.org/github.com/revel/revel).
 
