@@ -43,6 +43,7 @@ func InitDB() {
 	fmt.Println("Connected to database")
 
 	dbmap.AddTableWithName(Game{}, "games").SetKeys(true, "ID")
+	dbmap.AddTableWithName(User{}, "users").SetKeys(true, "ID")
 	dbmap.CreateTablesIfNotExists()
 
 }

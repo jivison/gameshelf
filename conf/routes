@@ -12,6 +12,7 @@ GET     /                                       App.Index
 # Games
 GET     /game/new                               Game.New
 POST    /game/create                            Game.Create
+GET     /game/:id                               Game.Show
 
 # Ignore favicon requests
 GET     /favicon.ico                            404

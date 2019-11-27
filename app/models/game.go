@@ -4,10 +4,12 @@ import "log"
 
 // Game is a board game
 type Game struct {
-	ID    int
-	Title string
-	Year  int
-	BggID int
+	ID       int
+	Title    string
+	Year     int
+	BggID    int
+	Username string `db:"user_name"`
+	User     *User  `db:"-"`
 }
 
 // FindGame finds a game buy its id
@@ -19,6 +21,8 @@ func FindGame(id int) (bool, *Game) {
 		log.Print("ERROR FindGame: ")
 		log.Println(err)
 	}
+
+	_, game.User = FindUser(game.Username)
 
 	return (err == nil), game
 }

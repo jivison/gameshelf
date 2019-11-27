@@ -1,0 +1,33 @@
+{{set . "title" "Sign Up" }}
+{{template "header.html" .}}
+
+<div class="container">
+  <div class="row">
+    <div class="span6">
+      {{template "flash.html" .}}
+    </div>
+  </div>
+</div>
+
+<h1>Sign Up</h1>
+<form action="/user/create" method="POST">
+    <div class="form-field">
+        <label for="email">Email:</label>
+        <input type="email" name="email" id="email" />
+    </div>
+
+    <div class="form-field">
+        <label for="year">Year:</label>
+        <input type="text" name="year" id="year" />
+    </div>
+
+    <div class="form-field">
+        <label for="bggID">BoardGameGeek ID:</label>
+        <input type="number" name="bggID" id="bggID" />
+    </div>
+
+    <input type="submit" value="Create Game">
+
+</form>
+
+{{template "footer.html" .}}
