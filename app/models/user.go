@@ -10,23 +10,20 @@ type User struct {
 	Username       string `db:",primarykey"`
 	Password       string `db:"-"`
 	HashedPassword []byte
-	Games          []Game `db:"-"`
 }
 
 func (u User) String() string {
 	return fmt.Sprintf("{ USERNAME: %s | PASSWORD: [HIDDEN] | HASHEDPASSWORD: %s }", u.Username, u.HashedPassword)
 }
 
-// AddGame adds a game to the user structs games
-func (u User) AddGame(game Game) {
-	u.Games = append(u.Games, game)
+func (u User) Games() []Game {
+	var games []Game
+	dbmap.Select(&games, "select * from games where user_name=$1", u.Username)
+	return games
 }
 
 // FindUser finds a user by its username
 func FindUser(username string) (bool, *User) {
-	// obj, err := dbmap.Get(User{}, username)
-	// user := obj.(*User)
-
 	var users []User
 	_, err := dbmap.Select(&users, "select * from users where \"Username\"=$1", username)
 
@@ -35,10 +32,6 @@ func FindUser(username string) (bool, *User) {
 	if err != nil {
 		log.Print("ERROR FindUser: ")
 		log.Println(err)
-	} else {
-		var games []Game
-		_, err = dbmap.Select(games, "select * from users where user_name=$1", user.Username)
-		user.Games = games
 	}
 
 	return (err != nil), &user

@@ -2,7 +2,15 @@
 {{template "header.html" .}}
 
 <h1>{{ .game.Title}}</h1>
-<h3>{{ .game.Year }}</h3>
-<h3>BoardGameGeek ID: {{ .game.BggID }}</h3>
+
+{{if .game.Year}}
+    <h3>{{ .game.Year }}</h3>
+{{end}}
+
+{{if .game.BggID}}
+    <h3>BoardGameGeek ID: {{ .game.BggID }}</h3>
+{{end}}
+
+<a href="/game/{{.game.ID}}/edit">Edit</a>
 
 {{template "footer.html" .}}

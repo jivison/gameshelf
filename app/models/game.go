@@ -12,6 +12,18 @@ type Game struct {
 	User     *User  `db:"-"`
 }
 
+// Delete deletes a game from the database
+func (game Game) Delete() bool {
+	_, err := dbmap.Delete(game)
+	return (err != nil)
+}
+
+// Update updates the database with any changes to a Game
+func (game Game) Update() bool {
+	_, err := dbmap.Update(game)
+	return (err != nil)
+}
+
 // FindGame finds a game buy its id
 func FindGame(id int) (bool, *Game) {
 	obj, err := dbmap.Get(Game{}, id)
@@ -27,6 +39,7 @@ func FindGame(id int) (bool, *Game) {
 	return (err == nil), game
 }
 
+// FindGameByTitle finds a game by its title
 func FindGameByTitle(title, username string, storageVar *[]Game) {
 	dbmap.Select(storageVar, "select * from games where title=$1 and username=$1", title, username)
 }
@@ -39,6 +52,7 @@ func CreateGame(title string, year, bggID int, username string) (bool, *Game) {
 		BggID:    bggID,
 		Username: username,
 	}
+
 	err := dbmap.Insert(game)
 
 	if err != nil {

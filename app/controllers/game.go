@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"gameshelf/app/models"
 	"math"
 	"strconv"
@@ -78,4 +79,37 @@ func (c Game) Create(title string, year, bggID int) revel.Result {
 
 	c.FlashParams()
 	return c.Redirect(Game.New)
+}
+
+// Index lists every game
+func (c Game) Index() revel.Result {
+	username, _ := c.Session.Get("user")
+	_, user := models.FindUser(username.(string))
+
+	games := user.Games()
+
+	return c.Render(games)
+}
+
+// Update updates a game in the database
+func (c Game) Update(id int, title string, year, bggID int) revel.Result {
+	_, game := models.FindGame(id)
+	game.Title = title
+	game.Year = year
+	game.BggID = bggID
+	game.Update()
+	return c.Redirect(fmt.Sprintf("/game/%d", game.ID))
+}
+
+// Delete deletes a game in the database
+func (c Game) Delete(id int) revel.Result {
+	_, game := models.FindGame(id)
+	game.Delete()
+	return c.Redirect(Game.Index)
+}
+
+// Edit renders the edit game page
+func (c Game) Edit(id int) revel.Result {
+	_, game := models.FindGame(id)
+	return c.Render(game)
 }
