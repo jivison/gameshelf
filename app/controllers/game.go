@@ -29,10 +29,46 @@ func (c Game) Show(id string) revel.Result {
 	return c.RenderText("Couldn't find a game with that id!")
 }
 
+func validateUniqueGame(title, username string, year int) bool {
+	var games []models.Game
+
+	models.FindGameByTitle(title, username, &games)
+
+	for _, persistedGame := range games {
+		if persistedGame.Year != 0 && persistedGame.Year == year {
+			return false
+		}
+	}
+
+	return true
+
+}
+
 // Create creates a new game in the db
 func (c Game) Create(title string, year, bggID int) revel.Result {
-	if ok, game := models.CreateGame(title, year, bggID); ok {
-		return c.Redirect(Game.Show, strconv.Itoa(game.ID))
+
+	username, usererr := c.Session.Get("user")
+
+	c.Validation.Required(title)
+	c.Validation.Required(validateUniqueGame(title, username.(string), year)).Key("title").Message("can't match another game with the same year")
+
+	c.Validation.Required(usererr != nil).Message("You must be signed in to create a game!")
+
+	c.Validation.MinSize(year, 0)
+	c.Validation.MaxSize(year, 2050)
+
+	c.Validation.MinSize(bggID, 0)
+
+	if c.Validation.HasErrors() {
+		c.Validation.Keep()
+		c.FlashParams()
+		return c.Redirect(Game.New)
+	}
+
+	if username, err := c.Session.Get("user"); err == nil {
+		if ok, game := models.CreateGame(title, year, bggID, username.(string)); ok {
+			return c.Redirect(Game.Show, strconv.Itoa(game.ID))
+		}
 	}
 
 	c.FlashParams()

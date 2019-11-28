@@ -3,6 +3,8 @@ package controllers
 import (
 	"gameshelf/app/models"
 
+	"golang.org/x/crypto/bcrypt"
+
 	"github.com/revel/revel"
 )
 
@@ -44,12 +46,44 @@ func (c App) getUser(username string) (user *models.User) {
 
 	ok, user := models.FindUser(username)
 
+	c.Log.Info(user.String())
+
 	if !ok {
 		c.Log.Errorf("Couldn't find user with the username: %s", username)
 		return nil
 	}
 
 	c.Session["fulluser"] = user
-	return
+	return user
 
+}
+
+// Login logs the user in (does not display the page)
+func (c App) Login(username, password string, remember bool) revel.Result {
+	user := c.getUser(username)
+	if user != nil {
+		err := bcrypt.CompareHashAndPassword(user.HashedPassword, []byte(password))
+
+		if err == nil {
+			c.Session["user"] = username
+
+			if remember {
+				c.Session.SetDefaultExpiration()
+			} else {
+				c.Session.SetNoExpiration()
+			}
+
+			c.Flash.Success("Welcome, " + username)
+			return c.Redirect(App.Index)
+
+		}
+	}
+	c.Flash.Out["username"] = username
+	c.Flash.Error("Login Failed")
+	return c.Redirect(App.SignIn)
+}
+
+// SignIn displays the signin page
+func (c App) SignIn() revel.Result {
+	return c.Render()
 }

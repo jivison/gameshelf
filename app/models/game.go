@@ -27,12 +27,17 @@ func FindGame(id int) (bool, *Game) {
 	return (err == nil), game
 }
 
+func FindGameByTitle(title, username string, storageVar *[]Game) {
+	dbmap.Select(storageVar, "select * from games where title=$1 and username=$1", title, username)
+}
+
 // CreateGame creates a game
-func CreateGame(title string, year, bggID int) (bool, *Game) {
+func CreateGame(title string, year, bggID int, username string) (bool, *Game) {
 	game := &Game{
-		Title: title,
-		Year:  year,
-		BggID: bggID,
+		Title:    title,
+		Year:     year,
+		BggID:    bggID,
+		Username: username,
 	}
 	err := dbmap.Insert(game)
 
