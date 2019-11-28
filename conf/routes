@@ -19,6 +19,8 @@ GET     /signin                                 App.SignIn
 GET     /signup                                 User.SignUp
 POST    /signup                                 User.Create
 POST    /signin                                 App.Login
+GET     /signout                                App.Signout
+POST    /signout                                App.Signout
 
 # Ignore favicon requests
 GET     /favicon.ico                            404

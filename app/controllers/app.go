@@ -15,7 +15,9 @@ type App struct {
 
 // Index renders the index page
 func (c App) Index() revel.Result {
-	return c.Render()
+	username, _ := c.Session.Get("user")
+	fulluser, _ := c.Session.Get("fulluser")
+	return c.Render(username, fulluser)
 }
 
 func (c App) AddUser() revel.Result {
@@ -86,4 +88,11 @@ func (c App) Login(username, password string, remember bool) revel.Result {
 // SignIn displays the signin page
 func (c App) SignIn() revel.Result {
 	return c.Render()
+}
+
+func (c App) SignOut() revel.Result {
+	for k := range c.Session {
+		delete(c.Session, k)
+	}
+	return c.Redirect(App.Index)
 }

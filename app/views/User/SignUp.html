@@ -11,26 +11,24 @@
 
 <h1>Sign Up</h1>
 <form action="/signup" method="POST">
-    {{with $field := field "user.Username" .}}
+    {{with $field := field "username" .}}
         <div class="form-field">
             <label for="username">Username:</label>
             <input type="text" name="username" id="username" />
         </div>
     {{end}}
     
-    {{with $field := field "user.Password" .}}
+    {{with $field := field "password" .}}
         <div class="form-field">
             <label for="password">Password:</label>
             <input type="password" name="password" id="password" />
         </div>
     {{end}}
-    
-    {{with $field := field "verifyPassword" .}}
-        <div class="form-field">
-            <label for="verifyPassword">Password Confirmation:</label>
-            <input type="password" name="verifyPassword" id="verifyPassword" />
-        </div>
-    {{end}}
+
+    <div class="form-field">
+        <label for="verifyPassword">Password Confirmation:</label>
+        <input type="password" name="verifyPassword" id="verifyPassword" />
+    </div>
 
     <input type="submit" value="Sign Up" />
 </form>

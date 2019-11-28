@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"gameshelf/app/models"
+	"math"
 	"strconv"
 
 	"github.com/revel/revel"
@@ -47,17 +48,21 @@ func validateUniqueGame(title, username string, year int) bool {
 // Create creates a new game in the db
 func (c Game) Create(title string, year, bggID int) revel.Result {
 
-	username, usererr := c.Session.Get("user")
+	username, _ := c.Session.Get("user")
 
-	c.Validation.Required(title)
-	c.Validation.Required(validateUniqueGame(title, username.(string), year)).Key("title").Message("can't match another game with the same year")
+	c.Log.Infof("TITLE: %s | YEAR: %d | BGGID: %d", title, year, bggID)
 
-	c.Validation.Required(usererr != nil).Message("You must be signed in to create a game!")
+	if username != nil {
+		c.Validation.Required(validateUniqueGame(title, username.(string), year)).Message("Title can't match another game with the same year")
+	}
 
-	c.Validation.MinSize(year, 0)
-	c.Validation.MaxSize(year, 2050)
+	c.Validation.Required(title).Message("A game must have a title")
 
-	c.Validation.MinSize(bggID, 0)
+	c.Validation.Required(username != nil).Message("You must be signed in to create a game")
+
+	c.Validation.Range(year, 0, 2050).Message("Year must be realistic (0-2050)")
+
+	c.Validation.Range(bggID, 0, math.MaxInt32).Message("Board Game Geek ID must be larger than 0")
 
 	if c.Validation.HasErrors() {
 		c.Validation.Keep()
