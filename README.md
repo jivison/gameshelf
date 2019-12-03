@@ -23,6 +23,10 @@ The directory structure of a generated Revel application:
         models/       App models go here
             init.go   Database configuration
 
+    db/
+        rambler.hjson Configuration for rambler, a migration tool
+                      Written in hjson, a human readable JSON alternative
+
     messages/         Message files
 
     public/           Public static assets
