@@ -26,6 +26,7 @@ func (c Game) Show(id string) revel.Result {
 		return c.RenderError(err)
 	}
 	if ok, game := models.FindGame(numID); ok {
+		c.Log.Info(game.String())
 		return c.Render(game)
 	}
 	return c.RenderText("Couldn't find a game with that id!")
@@ -47,11 +48,11 @@ func validateUniqueGame(title, username string, year int) bool {
 }
 
 // Create creates a new game in the db
-func (c Game) Create(title string, year, bggID int) revel.Result {
+func (c Game) Create(title, imgURL string, year, bggID int) revel.Result {
 
 	username, _ := c.Session.Get("user")
 
-	c.Log.Infof("TITLE: %s | YEAR: %d | BGGID: %d", title, year, bggID)
+	c.Log.Infof("{ TITLE: %s | YEAR: %d | BGGID: %d | USERNAME: %s | IMGURL: %s }", title, year, bggID, username.(string), imgURL)
 
 	if username != nil {
 		c.Validation.Required(validateUniqueGame(title, username.(string), year)).Message("Title can't match another game with the same year")
@@ -72,7 +73,8 @@ func (c Game) Create(title string, year, bggID int) revel.Result {
 	}
 
 	if username, err := c.Session.Get("user"); err == nil {
-		if ok, game := models.CreateGame(title, year, bggID, username.(string)); ok {
+		if ok, game := models.CreateGame(title, year, bggID, username.(string), imgURL); ok {
+			game.Refresh()
 			return c.Redirect(Game.Show, strconv.Itoa(game.ID))
 		}
 	}
@@ -92,11 +94,12 @@ func (c Game) Index() revel.Result {
 }
 
 // Update updates a game in the database
-func (c Game) Update(id int, title string, year, bggID int) revel.Result {
+func (c Game) Update(id int, title, imgURL string, year, bggID int) revel.Result {
 	_, game := models.FindGame(id)
 	game.Title = title
 	game.Year = year
 	game.BggID = bggID
+	game.ImgURL = imgURL
 	game.Update()
 	return c.Redirect(fmt.Sprintf("/game/%d", game.ID))
 }

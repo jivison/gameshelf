@@ -42,6 +42,7 @@ func (c User) Create(username, password, verifyPassword string) revel.Result {
 
 	user.HashedPassword, _ = bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	models.InsertUser(user)
+
 	c.Session["user"] = user.Username
 
 	return c.Redirect(App.Index)

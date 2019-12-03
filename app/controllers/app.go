@@ -61,20 +61,13 @@ func (c App) getUser(username string) (user *models.User) {
 }
 
 // Login logs the user in (does not display the page)
-func (c App) Login(username, password string, remember bool) revel.Result {
+func (c App) Login(username, password string) revel.Result {
 	user := c.getUser(username)
 	if user != nil {
 		err := bcrypt.CompareHashAndPassword(user.HashedPassword, []byte(password))
 
 		if err == nil {
 			c.Session["user"] = username
-
-			if remember {
-				c.Session.SetDefaultExpiration()
-			} else {
-				c.Session.SetNoExpiration()
-			}
-
 			c.Flash.Success("Welcome, " + username)
 			return c.Redirect(App.Index)
 

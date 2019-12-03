@@ -13,7 +13,7 @@ type User struct {
 }
 
 func (u User) String() string {
-	return fmt.Sprintf("{ USERNAME: %s | PASSWORD: [HIDDEN] | HASHEDPASSWORD: %s }", u.Username, u.HashedPassword)
+	return fmt.Sprintf("{ USERNAME: %s | HASHEDPASSWORD: %s }", u.Username, u.HashedPassword)
 }
 
 func (u User) Games() []Game {
@@ -27,6 +27,11 @@ func FindUser(username string) (bool, *User) {
 	var users []User
 	_, err := dbmap.Select(&users, "select * from users where \"Username\"=$1", username)
 
+	if len(users) < 1 {
+		log.Printf("INFO: FindUser couldn't find a user with username %s", username)
+		return false, &User{}
+	}
+
 	user := users[0]
 
 	if err != nil {
@@ -34,7 +39,7 @@ func FindUser(username string) (bool, *User) {
 		log.Println(err)
 	}
 
-	return (err != nil), &user
+	return (err == nil), &user
 }
 
 // InsertUser inserts an already 'built' user

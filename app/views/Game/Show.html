@@ -1,16 +1,26 @@
-{{set . "title" .game.Title }}
-{{template "header.html" .}}
+{{set . "title" .game.Title }} {{template "header.html" .}}
 
 <h1>{{ .game.Title}}</h1>
+
+{{if .game.ImgURL}}
+    <img src="{{.game.ImgURL}}" alt="{{.game.Title}}">
+{{end}}
 
 {{if .game.Year}}
     <h3>{{ .game.Year }}</h3>
 {{end}}
-
 {{if .game.BggID}}
     <h3>BoardGameGeek ID: {{ .game.BggID }}</h3>
 {{end}}
 
-<a href="/game/{{.game.ID}}/edit">Edit</a>
+<button onclick="window.location.href = '/game/{{.game.ID}}/edit'">Edit</button>
+
+<form
+    method="POST"
+    action="/game/{{ .game.ID }}/delete"
+    onsubmit="return confirm('Are you sure you want to delete this game?');"
+>
+    <button>Delete</button>
+</form>
 
 {{template "footer.html" .}}

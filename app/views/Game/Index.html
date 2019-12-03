@@ -4,6 +4,9 @@
 <div class="games" style="display: flex; flex-wrap: wrap;">
     {{range .games}}
     <div class="game-card" id="{{.ID}}" style="border: 2px solid black; padding: 1em; margin: 2em; border-radius: 1em; width: 30%" onclick="window.location.href = '/game/{{.ID}}'">
+        {{if .ImgURL}}
+            <img src="{{.ImgURL}}" alt="{{.Title}}">
+        {{end}}
         <h2>{{.Title}}</h2>
         {{if .Year}}
             <h3>({{.Year}})</h3>

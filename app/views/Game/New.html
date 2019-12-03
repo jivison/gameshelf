@@ -32,6 +32,13 @@
     </div>
     {{end}}
 
+    {{with $field := field "imgURL" .}}
+    <div class="form-field">
+        <label for="igmURL">Image URL:</label>
+        <input type="url" name="imgURL" id="imgURL" value="{{$field.Flash}}" />
+    </div>
+    {{end}}
+
     <input type="submit" value="Create Game">
 
 </form>

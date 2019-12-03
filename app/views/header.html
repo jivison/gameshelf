@@ -29,9 +29,9 @@
     </head>
     <body>
         <div id="header">
-            {{if session "fulluser" .}}
+            {{if session "user" .}}
             <div id="options">
-                Connected as {{ (session "fulluser" .).Username }} |
+                Connected as {{ session "user" . }} |
                 <a href="/">Home</a>
                 |
                 <a href="/game/new">New Game</a>

@@ -1,0 +1,12 @@
+{
+    driver: postgresql
+    protocol: tcp
+    host: 127.0.0.1
+    port: 5432
+    user: john
+    password: password
+    database: gameshelf
+    schema: ""
+    directory: migrations
+    table: migrations 
+}

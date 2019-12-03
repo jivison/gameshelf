@@ -12,11 +12,15 @@ GET     /                                       App.Index
 # Games
 GET     /game/new                               Game.New
 POST    /game/create                            Game.Create
-GET     /game/:id                               Game.Show
 GET     /games                                  Game.Index
+GET     /game/:id                               Game.Show
 GET     /game/:id/edit                          Game.Edit
+PATCH   /game/:id                               Game.Update
 DELETE  /game/:id                               Game.Delete
-PATCH   /game/:id                               Game.Update   
+
+# Temporary routes.
+POST    /game/:id/edit                          Game.Update
+POST    /game/:id/delete                        Game.Delete
 
 # Users
 GET     /signin                                 App.SignIn
