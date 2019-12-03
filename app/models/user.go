@@ -16,6 +16,7 @@ func (u User) String() string {
 	return fmt.Sprintf("{ USERNAME: %s | HASHEDPASSWORD: %s }", u.Username, u.HashedPassword)
 }
 
+// Games returns all the games associated with a user
 func (u User) Games() []Game {
 	var games []Game
 	dbmap.Select(&games, "select * from games where user_name=$1", u.Username)

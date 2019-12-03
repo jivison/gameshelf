@@ -20,13 +20,6 @@ func (c App) Index() revel.Result {
 	return c.Render(username, fulluser)
 }
 
-func (c App) AddUser() revel.Result {
-	if user := c.connected(); user != nil {
-		c.ViewArgs["user"] = user
-	}
-	return nil
-}
-
 func (c App) connected() *models.User {
 	if c.ViewArgs["user"] != nil {
 		return c.ViewArgs["user"].(*models.User)
@@ -83,6 +76,7 @@ func (c App) SignIn() revel.Result {
 	return c.Render()
 }
 
+// SignOut signs the user out
 func (c App) SignOut() revel.Result {
 	for k := range c.Session {
 		delete(c.Session, k)

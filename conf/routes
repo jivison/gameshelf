@@ -18,6 +18,11 @@ GET     /game/:id/edit                          Game.Edit
 PATCH   /game/:id                               Game.Update
 DELETE  /game/:id                               Game.Delete
 
+# Matches
+GET     /game/:gameid/match/new                 Match.New
+POST    /game/:gameid/match/create              Match.Create
+GET     /game/:gameid/match/:id                 Match.Show
+
 # Temporary routes.
 POST    /game/:id/edit                          Game.Update
 POST    /game/:id/delete                        Game.Delete

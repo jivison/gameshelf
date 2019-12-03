@@ -27,7 +27,8 @@ func (c Game) Show(id string) revel.Result {
 	}
 	if ok, game := models.FindGame(numID); ok {
 		c.Log.Info(game.String())
-		return c.Render(game)
+		matches := game.Matches()
+		return c.Render(game, matches)
 	}
 	return c.RenderText("Couldn't find a game with that id!")
 }
@@ -72,9 +73,8 @@ func (c Game) Create(title, imgURL string, year, bggID int) revel.Result {
 		return c.Redirect(Game.New)
 	}
 
-	if username, err := c.Session.Get("user"); err == nil {
+	if username != nil {
 		if ok, game := models.CreateGame(title, year, bggID, username.(string), imgURL); ok {
-			game.Refresh()
 			return c.Redirect(Game.Show, strconv.Itoa(game.ID))
 		}
 	}

@@ -16,12 +16,15 @@ type Game struct {
 	User     *User  `db:"-"`
 }
 
-func (game Game) Refresh() {
-
-}
-
 func (game Game) String() string {
 	return fmt.Sprintf("{ ID: %d | TITLE: %s | YEAR: %d | BGGID: %d | USERNAME: %s | IMGURL: %s }", game.ID, game.Title, game.Year, game.BggID, game.Username, game.ImgURL)
+}
+
+// Matches returns all the matches associated with a game
+func (game Game) Matches() []Match {
+	var matches []Match
+	dbmap.Select(&matches, "select * from matches where \"GameID\"=$1", game.ID)
+	return matches
 }
 
 // Delete deletes a game from the database
@@ -39,14 +42,16 @@ func (game Game) Update() error {
 // FindGame finds a game buy its id
 func FindGame(id int) (bool, *Game) {
 	obj, err := dbmap.Get(Game{}, id)
-	game := obj.(*Game)
+
+	var game *Game
 
 	if err != nil {
 		log.Print("ERROR FindGame: ")
 		log.Println(err)
+	} else {
+		game = obj.(*Game)
+		_, game.User = FindUser(game.Username)
 	}
-
-	_, game.User = FindUser(game.Username)
 
 	return (err == nil), game
 }

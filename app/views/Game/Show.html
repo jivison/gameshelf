@@ -1,14 +1,14 @@
 {{set . "title" .game.Title }} {{template "header.html" .}}
 
 <h1>{{ .game.Title}}</h1>
+{{if .game.Year}}
+    <h3>{{ .game.Year }}</h3>
+{{end}}
 
 {{if .game.ImgURL}}
     <img src="{{.game.ImgURL}}" alt="{{.game.Title}}">
 {{end}}
 
-{{if .game.Year}}
-    <h3>{{ .game.Year }}</h3>
-{{end}}
 {{if .game.BggID}}
     <h3>BoardGameGeek ID: {{ .game.BggID }}</h3>
 {{end}}
@@ -22,5 +22,18 @@
 >
     <button>Delete</button>
 </form>
+
+<button onclick="window.location.href = '/game/{{.game.ID}}/match/new'">Add a match</button>
+
+
+{{if (len .matches) ne 0}}
+    <h2>Games of {{.game.Title}}</h2>
+    Played:
+    <ul>
+        {{range .matches}}
+            <li><a href="/game/{{.GameID}}/match/{{.ID}}">{{timeagoinwords .DatePlayed}}</a></li>
+        {{end}}
+    </ul>
+{{end}}
 
 {{template "footer.html" .}}

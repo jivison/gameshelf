@@ -2,6 +2,9 @@ package app
 
 import (
 	"gameshelf/app/models"
+	"time"
+
+	"github.com/justincampbell/timeago"
 
 	"github.com/revel/revel"
 )
@@ -38,6 +41,11 @@ func init() {
 	// revel.OnAppStart(ExampleStartupScript)
 	revel.OnAppStart(models.InitDB)
 	// revel.OnAppStart(FillCache)
+
+	// Custom template functions
+	revel.TemplateFuncs["timeagoinwords"] = func(t time.Time) string {
+		return timeago.FromTime(t)
+	}
 }
 
 // HeaderFilter adds common security headers
