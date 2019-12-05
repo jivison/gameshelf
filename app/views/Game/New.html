@@ -34,8 +34,15 @@
 
     {{with $field := field "imgURL" .}}
     <div class="form-field">
-        <label for="igmURL">Image URL:</label>
+        <label for="imgURL">Image URL:</label>
         <input type="url" name="imgURL" id="imgURL" value="{{$field.Flash}}" />
+    </div>
+    {{end}}
+
+    {{with $field := field "complexityRating" .}}
+    <div class="form-field">
+        <label for="complexityRating">Complexity Rating:</label>
+        <input type="number" step="0.01" min="0" max="5" value="1.00" name="complexityRating" id="complexityRating" value="{{$field.Flash}}" />
     </div>
     {{end}}
 

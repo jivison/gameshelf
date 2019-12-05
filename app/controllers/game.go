@@ -49,7 +49,7 @@ func validateUniqueGame(title, username string, year int) bool {
 }
 
 // Create creates a new game in the db
-func (c Game) Create(title, imgURL string, year, bggID int) revel.Result {
+func (c Game) Create(title, imgURL string, year, bggID int, complexityRating float64) revel.Result {
 
 	username, _ := c.Session.Get("user")
 
@@ -67,6 +67,8 @@ func (c Game) Create(title, imgURL string, year, bggID int) revel.Result {
 
 	c.Validation.Range(bggID, 0, math.MaxInt32).Message("Board Game Geek ID must be larger than 0")
 
+	c.Validation.RangeFloat(complexityRating, 0, 5).Key("complexityRating").Message("Complexity Rating must be in between 0 and 5!")
+
 	if c.Validation.HasErrors() {
 		c.Validation.Keep()
 		c.FlashParams()
@@ -74,7 +76,7 @@ func (c Game) Create(title, imgURL string, year, bggID int) revel.Result {
 	}
 
 	if username != nil {
-		if ok, game := models.CreateGame(title, year, bggID, username.(string), imgURL); ok {
+		if ok, game := models.CreateGame(title, year, bggID, username.(string), imgURL, float32(complexityRating)); ok {
 			return c.Redirect(Game.Show, strconv.Itoa(game.ID))
 		}
 	}
@@ -94,12 +96,13 @@ func (c Game) Index() revel.Result {
 }
 
 // Update updates a game in the database
-func (c Game) Update(id int, title, imgURL string, year, bggID int) revel.Result {
+func (c Game) Update(id int, title, imgURL string, year, bggID int, complexityRating float32) revel.Result {
 	_, game := models.FindGame(id)
 	game.Title = title
 	game.Year = year
 	game.BggID = bggID
 	game.ImgURL = imgURL
+	game.ComplexityRating = complexityRating
 	game.Update()
 	return c.Redirect(fmt.Sprintf("/game/%d", game.ID))
 }

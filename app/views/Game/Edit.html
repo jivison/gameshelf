@@ -41,6 +41,15 @@
         {{end}}
     </div>
 
+    <div class="form-field">
+        <label for="complexityRating">Complexity Rating:</label>
+        {{if .game.ComplexityRating}}
+            <input type="number" min="0" max="5" step="0.01" name="complexityRating" id="complexityRating" value="{{.game.ComplexityRating}}" />
+        {{else}}
+            <input type="number" min="0" max="5" step="0.01" name="complexityRating" id="complexityRating" value="1.00" />
+        {{end}}
+    </div>
+
     <input type="submit" value="Update Game" />
 </form>
 

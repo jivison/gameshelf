@@ -22,6 +22,7 @@ DELETE  /game/:id                               Game.Delete
 GET     /game/:gameid/match/new                 Match.New
 POST    /game/:gameid/match/create              Match.Create
 GET     /game/:gameid/match/:id                 Match.Show
+POST    /game/:gameid/match/:id/addScore        Match.AddScore
 
 # Temporary routes.
 POST    /game/:id/edit                          Game.Update

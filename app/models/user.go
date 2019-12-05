@@ -9,6 +9,7 @@ import (
 type User struct {
 	Username       string `db:",primarykey"`
 	Password       string `db:"-"`
+	FirstName      string
 	HashedPassword []byte
 }
 

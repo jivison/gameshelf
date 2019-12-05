@@ -7,17 +7,18 @@ import (
 
 // Game is a board game
 type Game struct {
-	ID       int
-	Title    string
-	Year     int
-	BggID    int
-	ImgURL   string
-	Username string `db:"user_name"`
-	User     *User  `db:"-"`
+	ID               int
+	Title            string
+	Year             int
+	BggID            int
+	ImgURL           string
+	ComplexityRating float32
+	Username         string `db:"user_name"`
+	User             *User  `db:"-"`
 }
 
 func (game Game) String() string {
-	return fmt.Sprintf("{ ID: %d | TITLE: %s | YEAR: %d | BGGID: %d | USERNAME: %s | IMGURL: %s }", game.ID, game.Title, game.Year, game.BggID, game.Username, game.ImgURL)
+	return fmt.Sprintf("{ ID: %d | TITLE: %s | YEAR: %d | BGGID: %d | USERNAME: %s | IMGURL: %s | COMPLEXITYRATING: %f }", game.ID, game.Title, game.Year, game.BggID, game.Username, game.ImgURL, game.ComplexityRating)
 }
 
 // Matches returns all the matches associated with a game
@@ -62,7 +63,7 @@ func FindGameByTitle(title, username string, storageVar *[]Game) {
 }
 
 // CreateGame creates a game
-func CreateGame(title string, year, bggID int, username, imgURL string) (bool, *Game) {
+func CreateGame(title string, year, bggID int, username, imgURL string, complexityRating float32) (bool, *Game) {
 	game := &Game{
 		Title:    title,
 		Year:     year,

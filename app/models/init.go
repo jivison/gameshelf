@@ -32,8 +32,6 @@ func InitDB() {
 		panic(err)
 	}
 
-	// defer db.Close()
-
 	err = db.Ping()
 
 	if err != nil {
@@ -45,5 +43,5 @@ func InitDB() {
 	dbmap.AddTableWithName(Game{}, "games").SetKeys(true, "ID")
 	dbmap.AddTableWithName(User{}, "users").SetKeys(false, "Username")
 	dbmap.AddTableWithName(Match{}, "matches").SetKeys(true, "ID")
-
+	dbmap.AddTableWithName(MatchScore{}, "match_scores").SetKeys(true, "ID")
 }

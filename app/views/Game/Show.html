@@ -13,6 +13,10 @@
     <h3>BoardGameGeek ID: {{ .game.BggID }}</h3>
 {{end}}
 
+{{if .game.ComplexityRating}}
+    <h3>Complexity Rating: {{ .game.ComplexityRating }}</h3>
+{{end}}
+
 <button onclick="window.location.href = '/game/{{.game.ID}}/edit'">Edit</button>
 
 <form

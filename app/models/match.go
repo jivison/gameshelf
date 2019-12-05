@@ -13,6 +13,33 @@ type Match struct {
 	HostUserName string
 }
 
+// MatchScores return all the match scores associated with a match
+func (match Match) MatchScores() []MatchScore {
+	var matchScores []MatchScore
+	dbmap.Select(matchScores, "select * from match_scores where \"MatchID\"=$1", match.ID)
+	return matchScores
+}
+
+// AverageScore calculates the average score
+func (match Match) AverageScore() float32 {
+	var total float32
+
+	scores := match.MatchScores()
+
+	for _, matchScore := range scores {
+		total += matchScore.BaseScore
+	}
+
+	return total / float32(len(scores))
+}
+
+// CalculateAll re-calculates all the matchscores final scores (because the average changes with every new player)
+func (match Match) CalculateAll() {
+	for _, matchScore := range match.MatchScores() {
+		matchScore.CalculateFinalScore()
+	}
+}
+
 // Game returns the game associated with a game
 func (match Match) Game() Game {
 	var game Game
