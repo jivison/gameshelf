@@ -40,7 +40,7 @@ func (game Game) Update() error {
 	return err
 }
 
-// FindGame finds a game buy its id
+// FindGame finds a game by its id
 func FindGame(id int) (bool, *Game) {
 	obj, err := dbmap.Get(Game{}, id)
 
@@ -65,11 +65,12 @@ func FindGameByTitle(title, username string, storageVar *[]Game) {
 // CreateGame creates a game
 func CreateGame(title string, year, bggID int, username, imgURL string, complexityRating float32) (bool, *Game) {
 	game := &Game{
-		Title:    title,
-		Year:     year,
-		BggID:    bggID,
-		Username: username,
-		ImgURL:   imgURL,
+		Title:            title,
+		Year:             year,
+		BggID:            bggID,
+		Username:         username,
+		ImgURL:           imgURL,
+		ComplexityRating: complexityRating,
 	}
 
 	err := dbmap.Insert(game)

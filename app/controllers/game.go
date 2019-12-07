@@ -99,11 +99,19 @@ func (c Game) Index() revel.Result {
 // Update updates a game in the database
 func (c Game) Update(id int, title, imgURL string, year, bggID int, complexityRating float32) revel.Result {
 	_, game := models.FindGame(id)
+
+	if game.ComplexityRating != complexityRating {
+		game.ComplexityRating = complexityRating
+		game.Update()
+		for _, match := range game.Matches() {
+			match.CalculateAll()
+		}
+	}
+
 	game.Title = title
 	game.Year = year
 	game.BggID = bggID
 	game.ImgURL = imgURL
-	game.ComplexityRating = complexityRating
 	game.Update()
 	return c.Redirect(fmt.Sprintf("/game/%d", game.ID))
 }

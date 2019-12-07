@@ -1,6 +1,9 @@
 package models
 
-import "log"
+import (
+	"log"
+	"math"
+)
 
 // MatchScore represents a single players score in a match
 type MatchScore struct {
@@ -12,17 +15,30 @@ type MatchScore struct {
 	BaseScore         float32
 	IsWinner          bool
 	FinalScore        float32
-	Game              Game  `db:"-"`
-	Match             Match `db:"-"`
+}
+
+// Delete deletes a matchScore from the database
+func (matchScore MatchScore) Delete() bool {
+	_, err := dbmap.Delete(&matchScore)
+	return (err != nil)
 }
 
 // CalculateFinalScore sets a match score's final score
-func (matchScore MatchScore) CalculateFinalScore() float32 {
-	if matchScore.IsWinner {
-		matchScore.FinalScore = (matchScore.BaseScore / matchScore.Match.AverageScore()) * 1.10
+func (matchScore MatchScore) CalculateFinalScore(match Match) float32 {
+	average := match.AverageScore()
+
+	game := match.Game()
+
+	if average == float32(math.Inf(1)) {
+		matchScore.FinalScore = 100
+	} else if matchScore.IsWinner {
+		matchScore.FinalScore = (matchScore.BaseScore / average) * 110
+	} else {
+		matchScore.FinalScore = matchScore.BaseScore / average * 100
 	}
-	matchScore.FinalScore = matchScore.BaseScore / matchScore.Match.AverageScore()
-	log.Printf("Average Score: %f", matchScore.Match.AverageScore())
+
+	matchScore.FinalScore = (game.ComplexityRating / 5) * matchScore.FinalScore
+
 	dbmap.Update(&matchScore)
 	return matchScore.FinalScore
 }
@@ -36,27 +52,8 @@ func (matchScore MatchScore) ComplexityRating() float32 {
 	return 1.0
 }
 
-// GetGame sets the Game field on a matchScore to the one that corresponds with its GameID
-func (matchScore MatchScore) GetGame() Game {
-	ok, game := FindGame(matchScore.GameID)
-	if ok {
-		matchScore.Game = *game
-		return *game
-	}
-	return Game{}
-}
-
-// GetMatch sets the Match firld on a matchScore to the one that correspondes with its MatchID
-func (matchScore MatchScore) GetMatch() Match {
-	ok, match := FindMatch(matchScore.MatchID)
-	if ok {
-		matchScore.Match = *match
-		return *match
-	}
-	return Match{}
-}
-
-func CreateMatchScore(match Match, game Game, playerUserName string, baseScore float32, isWinner bool) (bool, *MatchScore) {
+// CreateMatchScore creates a match score in the database
+func CreateMatchScore(match *Match, game *Game, playerUserName string, baseScore float32, isWinner bool) (bool, *MatchScore) {
 	ok, player := FindUser(playerUserName)
 
 	if !ok {
@@ -66,14 +63,11 @@ func CreateMatchScore(match Match, game Game, playerUserName string, baseScore f
 	matchScore := &MatchScore{
 		MatchID:           match.ID,
 		GameID:            game.ID,
-		PlayerUserName:    playerUserName,
+		PlayerUserName:    player.Username,
 		PlayerDisplayName: player.FirstName,
 		BaseScore:         baseScore,
 		IsWinner:          isWinner,
 	}
-
-	matchScore.Match = match
-	matchScore.Game = game
 
 	err := dbmap.Insert(matchScore)
 
@@ -83,6 +77,22 @@ func CreateMatchScore(match Match, game Game, playerUserName string, baseScore f
 	}
 
 	match.CalculateAll()
+
+	return (err == nil), matchScore
+}
+
+// FindMatchScore finds a match score by its ID
+func FindMatchScore(id int) (bool, *MatchScore) {
+	obj, err := dbmap.Get(MatchScore{}, id)
+
+	var matchScore *MatchScore
+
+	if err != nil {
+		log.Print("ERROR FindMatchScore: ")
+		log.Println(err)
+	} else {
+		matchScore = obj.(*MatchScore)
+	}
 
 	return (err == nil), matchScore
 }

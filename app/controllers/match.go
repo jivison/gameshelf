@@ -3,6 +3,7 @@ package controllers
 import (
 	"fmt"
 	"gameshelf/app/models"
+	"sort"
 	"time"
 
 	"github.com/revel/revel"
@@ -52,6 +53,13 @@ func (c Match) Show(gameid, id int) revel.Result {
 
 	if ok {
 		scores := match.MatchScores()
+		sort.SliceStable(scores, func(i, j int) bool {
+			if (scores[i].IsWinner && !scores[j].IsWinner) || (!scores[i].IsWinner && scores[j].IsWinner) {
+				return scores[i].IsWinner
+			}
+			return scores[i].FinalScore > scores[j].FinalScore
+		})
+
 		return c.Render(scores, match)
 	}
 
@@ -64,7 +72,17 @@ func (c Match) AddScore(gameid, id int, playerUserName string, baseScore float32
 	if ok {
 		ok, match := models.FindMatch(id)
 		if ok {
-			models.CreateMatchScore(*match, *game, playerUserName, baseScore, isWinner)
+			players := match.Players()
+
+			if players[playerUserName] {
+				c.Flash.Error("That player already has a score")
+				return c.Redirect(Match.Show, match.GameID, match.ID)
+			}
+
+			if ok, _ := models.CreateMatchScore(match, game, playerUserName, baseScore, isWinner); !ok {
+				c.Flash.Error("Couldn't find a user with that username")
+				c.FlashParams()
+			}
 			return c.Redirect(Match.Show, match.GameID, match.ID)
 		}
 
@@ -72,4 +90,17 @@ func (c Match) AddScore(gameid, id int, playerUserName string, baseScore float32
 	}
 
 	return c.RenderText(fmt.Sprintf("Couldn't find a game with that id! (%d)", gameid))
+}
+
+// RemoveScore removes a match score from a match
+func (c Match) RemoveScore(gameid, matchid, id int) revel.Result {
+	ok, matchScore := models.FindMatchScore(id)
+	if ok {
+		matchScore.Delete()
+
+		_, match := models.FindMatch(matchid)
+		match.CalculateAll()
+	}
+
+	return c.Redirect(Match.Show, gameid, matchid)
 }

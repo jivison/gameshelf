@@ -1,6 +1,7 @@
 package app
 
 import (
+	"fmt"
 	"gameshelf/app/models"
 	"time"
 
@@ -45,6 +46,10 @@ func init() {
 	// Custom template functions
 	revel.TemplateFuncs["timeagoinwords"] = func(t time.Time) string {
 		return timeago.FromTime(t)
+	}
+
+	revel.TemplateFuncs["displayfloat"] = func(f float32) string {
+		return fmt.Sprintf("%.0f", f)
 	}
 }
 

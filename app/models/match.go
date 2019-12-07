@@ -2,6 +2,7 @@ package models
 
 import (
 	"log"
+	"math"
 	"time"
 )
 
@@ -20,20 +21,37 @@ func (match Match) MatchScores() []MatchScore {
 	return matchScores
 }
 
+// Players returns a slice of all the players in a game
+func (match Match) Players() map[string]bool {
+	scores := match.MatchScores()
+
+	players := make(map[string]bool)
+
+	for _, score := range scores {
+		players[score.PlayerUserName] = true
+	}
+
+	return players
+}
+
 // AverageScore calculates the average score
 func (match Match) AverageScore() float32 {
 	var total float32
 
 	scores := match.MatchScores()
 
+	log.Print(scores)
+	log.Print(match)
+
+	if len(scores) == 1 {
+		return float32(math.Inf(1))
+	}
+
 	for _, matchScore := range scores {
 		total += matchScore.BaseScore
 	}
 
 	result := total / float32(len(scores))
-	if result == 0 {
-		return float32(1)
-	}
 
 	return result
 }
@@ -41,14 +59,13 @@ func (match Match) AverageScore() float32 {
 // CalculateAll re-calculates all the matchscores final scores (because the average changes with every new player)
 func (match Match) CalculateAll() {
 	for _, matchScore := range match.MatchScores() {
-		matchScore.CalculateFinalScore()
+		matchScore.CalculateFinalScore(match)
 	}
 }
 
 // Game returns the game associated with a game
-func (match Match) Game() Game {
-	var game Game
-	dbmap.Select(game, "select * from games where \"ID\"=$1", match.Game)
+func (match Match) Game() *Game {
+	_, game := FindGame(match.GameID)
 	return game
 }
 

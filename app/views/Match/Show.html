@@ -2,19 +2,31 @@
 
 <h2>Played {{timeagoinwords .match.DatePlayed}}</h2>
 
+{{ $gameid := .match.GameID }}
+{{ $matchid := .match.ID }}
+
 <ul>
     {{range .scores}}
-        <li>{{.PlayerDisplayName}} - {{.FinalScore}} (from {{.BaseScore}})</li>
+        <li>{{.PlayerDisplayName}} {{if .IsWinner}} 👑 {{end}}- {{displayfloat .FinalScore}} (from {{.BaseScore}}) <form action="/game/{{$gameid}}/match/{{$matchid}}/removeScore" method="POST"><input type="hidden" name="id" value="{{.ID}}"><input type="submit" value="Delete"></form></li>
     {{end}}
 </ul>
 
 
 <h2>Add someones score</h2>
+
+<div class="container">
+    <div class="row">
+      <div class="span6">
+        {{template "flash.html" .}}
+      </div>
+    </div>
+  </div>
+
 <form action="/game/{{.match.GameID}}/match/{{.match.ID}}/addScore" method="POST">
     {{with $field := field "playerUserName" .}}
         <div class="form-field">
             <label for="playerUserName">Players User Name:</label>
-            <input type="text" name="playerUserName" id="playerUserName" value="{{$field.Flash}}" />
+            <input type="text" name="playerUserName" id="playerUserName" value="{{$field.Flash}}" autofocus />
         </div>
     {{end}}
 
@@ -25,10 +37,10 @@
         </div>
     {{end}}
 
-    {{with $field := field "isWinner" .}}
+    {{with $checkboxField := field "isWinner" .}}
         <div class="form-field">
             <label for="isWinner">Winner? </label>
-            <input type="checkbox" name="isWinner" id="isWinner" value="{{$field.Flash}}" />
+            {{checkbox $checkboxField "true"}}
         </div>
     {{end}}
 
