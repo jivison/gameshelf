@@ -53,7 +53,7 @@ func (c Game) Create(title, imgURL string, year, bggID int, complexityRating flo
 
 	username, _ := c.Session.Get("user")
 
-	c.Log.Infof("{ TITLE: %s | YEAR: %d | BGGID: %d | USERNAME: %s | IMGURL: %s }", title, year, bggID, username.(string), imgURL)
+	c.Log.Infof("{ TITLE: %s | YEAR: %d | BGGID: %d | USERNAME: %s | IMGURL: %s | COMPLEXITYRATING: %f}", title, year, bggID, username.(string), imgURL, complexityRating)
 
 	if username != nil {
 		c.Validation.Required(validateUniqueGame(title, username.(string), year)).Message("Title can't match another game with the same year")
@@ -88,6 +88,7 @@ func (c Game) Create(title, imgURL string, year, bggID int, complexityRating flo
 // Index lists every game
 func (c Game) Index() revel.Result {
 	username, _ := c.Session.Get("user")
+
 	_, user := models.FindUser(username.(string))
 
 	games := user.Games()

@@ -22,6 +22,7 @@ func (matchScore MatchScore) CalculateFinalScore() float32 {
 		matchScore.FinalScore = (matchScore.BaseScore / matchScore.Match.AverageScore()) * 1.10
 	}
 	matchScore.FinalScore = matchScore.BaseScore / matchScore.Match.AverageScore()
+	log.Printf("Average Score: %f", matchScore.Match.AverageScore())
 	dbmap.Update(&matchScore)
 	return matchScore.FinalScore
 }
@@ -74,14 +75,14 @@ func CreateMatchScore(match Match, game Game, playerUserName string, baseScore f
 	matchScore.Match = match
 	matchScore.Game = game
 
-	match.CalculateAll()
-
 	err := dbmap.Insert(matchScore)
 
 	if err != nil {
 		log.Print("ERROR: ")
 		log.Println(err)
 	}
+
+	match.CalculateAll()
 
 	return (err == nil), matchScore
 }

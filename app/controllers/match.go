@@ -52,18 +52,20 @@ func (c Match) Show(gameid, id int) revel.Result {
 
 	if ok {
 		scores := match.MatchScores()
-		return c.Render(match, scores)
+		return c.Render(scores, match)
 	}
 
 	return c.RenderText(fmt.Sprintf("Couldn't find a match with that id! (%d)", id))
 }
 
+// AddScore adds a match score to a match
 func (c Match) AddScore(gameid, id int, playerUserName string, baseScore float32, isWinner bool) revel.Result {
 	ok, game := models.FindGame(gameid)
 	if ok {
 		ok, match := models.FindMatch(id)
 		if ok {
 			models.CreateMatchScore(*match, *game, playerUserName, baseScore, isWinner)
+			return c.Redirect(Match.Show, match.GameID, match.ID)
 		}
 
 		return c.RenderText(fmt.Sprintf("Couldn't find a match with that id! (%d)", id))

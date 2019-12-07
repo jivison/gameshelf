@@ -16,7 +16,7 @@ type Match struct {
 // MatchScores return all the match scores associated with a match
 func (match Match) MatchScores() []MatchScore {
 	var matchScores []MatchScore
-	dbmap.Select(matchScores, "select * from match_scores where \"MatchID\"=$1", match.ID)
+	dbmap.Select(&matchScores, "select * from match_scores where \"MatchID\"=$1", match.ID)
 	return matchScores
 }
 
@@ -30,7 +30,12 @@ func (match Match) AverageScore() float32 {
 		total += matchScore.BaseScore
 	}
 
-	return total / float32(len(scores))
+	result := total / float32(len(scores))
+	if result == 0 {
+		return float32(1)
+	}
+
+	return result
 }
 
 // CalculateAll re-calculates all the matchscores final scores (because the average changes with every new player)

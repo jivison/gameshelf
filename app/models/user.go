@@ -3,6 +3,7 @@ package models
 import (
 	"fmt"
 	"log"
+	"strings"
 )
 
 // User is a user
@@ -27,7 +28,12 @@ func (u User) Games() []Game {
 // FindUser finds a user by its username
 func FindUser(username string) (bool, *User) {
 	var users []User
-	_, err := dbmap.Select(&users, "select * from users where \"Username\"=$1", username)
+	_, err := dbmap.Select(&users, "select * from users where \"Username\"=$1", strings.TrimSpace(username))
+
+	if err != nil {
+		log.Print("ERROR FindUser: ")
+		log.Println(err)
+	}
 
 	if len(users) < 1 {
 		log.Printf("INFO: FindUser couldn't find a user with username %s", username)
@@ -35,11 +41,6 @@ func FindUser(username string) (bool, *User) {
 	}
 
 	user := users[0]
-
-	if err != nil {
-		log.Print("ERROR FindUser: ")
-		log.Println(err)
-	}
 
 	return (err == nil), &user
 }

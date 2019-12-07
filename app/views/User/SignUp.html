@@ -18,6 +18,14 @@
         </div>
     {{end}}
     
+    {{with $field := field "firstName" .}}
+        <div class="form-field">
+            <p>This is the name that will display to your friends</p>
+            <label for="firstName">First Name:</label>
+            <input type="text" name="firstName" id="firstName" />
+        </div>
+    {{end}}
+
     {{with $field := field "password" .}}
         <div class="form-field">
             <label for="password">Password:</label>

@@ -19,7 +19,7 @@ func (c User) SignUp() revel.Result {
 }
 
 // Create creates a persisted user
-func (c User) Create(username, password, verifyPassword string) revel.Result {
+func (c User) Create(username, password, verifyPassword, firstName string) revel.Result {
 	c.Validation.Required(username)
 	c.Validation.MinSize(username, 4)
 	c.Validation.MaxSize(username, 20)
@@ -36,8 +36,9 @@ func (c User) Create(username, password, verifyPassword string) revel.Result {
 	}
 
 	user := models.User{
-		Username: username,
-		Password: password,
+		Username:  username,
+		Password:  password,
+		FirstName: firstName,
 	}
 
 	user.HashedPassword, _ = bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)

@@ -1,0 +1,20 @@
+{
+    "items": [
+        {
+            "item": "Fix complexityRating not being included in Game.Create",
+            "completed": false
+        },
+        {
+            "item": "Fix final score calculation (+ average calculation) on match scores",
+            "completed": false
+        },
+        {
+            "item": "Add uniqueness validation within match for username",
+            "completed": false
+        },
+        {
+            "item": "Fix isWinner not being included in Match.AddScore",
+            "completed": false
+        }
+    ]
+}
