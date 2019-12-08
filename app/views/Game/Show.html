@@ -35,7 +35,7 @@
     Played:
     <ul>
         {{range .matches}}
-            <li><a href="/game/{{.GameID}}/match/{{.ID}}">{{timeagoinwords .DatePlayed}}</a></li>
+            <li><a href="/match/{{.ID}}">{{timeagoinwords .DatePlayed}}</a></li>
         {{end}}
     </ul>
 {{end}}

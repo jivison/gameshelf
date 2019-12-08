@@ -17,26 +17,26 @@ type Game struct {
 	User             *User  `db:"-"`
 }
 
-func (game Game) String() string {
-	return fmt.Sprintf("{ ID: %d | TITLE: %s | YEAR: %d | BGGID: %d | USERNAME: %s | IMGURL: %s | COMPLEXITYRATING: %f }", game.ID, game.Title, game.Year, game.BggID, game.Username, game.ImgURL, game.ComplexityRating)
+func (g Game) String() string {
+	return fmt.Sprintf("{ ID: %d | TITLE: %s | YEAR: %d | BGGID: %d | USERNAME: %s | IMGURL: %s | COMPLEXITYRATING: %f }", g.ID, g.Title, g.Year, g.BggID, g.Username, g.ImgURL, g.ComplexityRating)
 }
 
 // Matches returns all the matches associated with a game
-func (game Game) Matches() []Match {
+func (g Game) Matches() []Match {
 	var matches []Match
-	dbmap.Select(&matches, "select * from matches where \"GameID\"=$1", game.ID)
+	dbmap.Select(&matches, "select * from matches where \"GameID\"=$1", g.ID)
 	return matches
 }
 
 // Delete deletes a game from the database
-func (game Game) Delete() bool {
-	_, err := dbmap.Delete(&game)
+func (g Game) Delete() bool {
+	_, err := dbmap.Delete(&g)
 	return (err != nil)
 }
 
 // Update updates the database with any changes to a Game
-func (game Game) Update() error {
-	_, err := dbmap.Update(&game)
+func (g Game) Update() error {
+	_, err := dbmap.Update(&g)
 	return err
 }
 

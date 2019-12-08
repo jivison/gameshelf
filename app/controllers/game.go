@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"gameshelf/app/models"
 	"math"
+	"sort"
 	"strconv"
 
 	"github.com/revel/revel"
@@ -28,6 +29,9 @@ func (c Game) Show(id string) revel.Result {
 	if ok, game := models.FindGame(numID); ok {
 		c.Log.Info(game.String())
 		matches := game.Matches()
+		sort.SliceStable(matches, func(i, j int) bool {
+			return matches[i].DatePlayed.Unix() > matches[j].DatePlayed.Unix()
+		})
 		return c.Render(game, matches)
 	}
 	return c.RenderText("Couldn't find a game with that id!")
@@ -92,6 +96,10 @@ func (c Game) Index() revel.Result {
 	_, user := models.FindUser(username.(string))
 
 	games := user.Games()
+
+	sort.SliceStable(games, func(i, j int) bool {
+		return games[i].Title < games[j].Title
+	})
 
 	return c.Render(games)
 }

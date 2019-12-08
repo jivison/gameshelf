@@ -1,5 +1,7 @@
 {{set . "title" "View Match" }} {{template "header.html" .}}
 
+<button onclick="window.location.href = '/game/{{ .match.GameID }}'">Back to game</button>
+
 <h2>Played {{timeagoinwords .match.DatePlayed}}</h2>
 
 {{ $gameid := .match.GameID }}
@@ -48,5 +50,14 @@
     <input type="submit" value="Add Score">
 </form>
 
+<hr />
+
+<form
+    method="POST"
+    action="/match/{{ .match.ID }}/delete"
+    onsubmit="return confirm('Are you sure you want to delete this match?');"
+>
+    <button>Delete</button>
+</form>
 
 {{template "footer.html" .}}

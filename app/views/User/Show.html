@@ -1,0 +1,11 @@
+{{set . "title" .game.Title }} {{template "header.html" .}}
+
+<h1>{{.user.FirstName}}</h1>
+<h3>({{.user.Username}})</h3>
+
+<form action="/addFriend" method="post">
+    <input type="hidden" name="username" value="{{.user.Username}}">
+    <button type="submit">Send a friend request</button>
+</form>
+
+{{template "footer.html" .}}

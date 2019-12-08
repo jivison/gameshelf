@@ -21,13 +21,15 @@ DELETE  /game/:id                               Game.Delete
 # Matches
 GET     /game/:gameid/match/new                 Match.New
 POST    /game/:gameid/match/create              Match.Create
-GET     /game/:gameid/match/:id                 Match.Show
+GET     /match/:id                              Match.Show
 POST    /game/:gameid/match/:id/addScore        Match.AddScore
-POST    /game/:gameid/match/:matchid/removeScore     Match.RemoveScore
+POST    /game/:gameid/match/:mid/removeScore    Match.RemoveScore
+DELETE  /match/:id/                             Match.Delete
 
 # Temporary routes.
 POST    /game/:id/edit                          Game.Update
 POST    /game/:id/delete                        Game.Delete
+POST    /match/:id/delete                       Match.Delete
 
 # Users
 GET     /signin                                 App.SignIn
@@ -36,6 +38,9 @@ POST    /signup                                 User.Create
 POST    /signin                                 App.Login
 GET     /signout                                App.Signout
 POST    /signout                                App.Signout
+GET     /addFriend                              User.FindFriend
+POST    /addFriend                              User.AddFriend
+GET     /user/:username                         User.Show
 
 # Ignore favicon requests
 GET     /favicon.ico                            404

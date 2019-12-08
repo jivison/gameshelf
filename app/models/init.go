@@ -44,4 +44,5 @@ func InitDB() {
 	dbmap.AddTableWithName(User{}, "users").SetKeys(false, "Username")
 	dbmap.AddTableWithName(Match{}, "matches").SetKeys(true, "ID")
 	dbmap.AddTableWithName(MatchScore{}, "match_scores").SetKeys(true, "ID")
+	dbmap.AddTableWithName(Friend{}, "friends").SetKeys(true, "ID")
 }

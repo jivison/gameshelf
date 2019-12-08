@@ -48,7 +48,7 @@ func (c Match) Create(gameid int, datePlayed time.Time) revel.Result {
 }
 
 // Show displays a match
-func (c Match) Show(gameid, id int) revel.Result {
+func (c Match) Show(id int) revel.Result {
 	ok, match := models.FindMatch(id)
 
 	if ok {
@@ -93,14 +93,24 @@ func (c Match) AddScore(gameid, id int, playerUserName string, baseScore float32
 }
 
 // RemoveScore removes a match score from a match
-func (c Match) RemoveScore(gameid, matchid, id int) revel.Result {
+func (c Match) RemoveScore(gameid, mid, id int) revel.Result {
 	ok, matchScore := models.FindMatchScore(id)
 	if ok {
 		matchScore.Delete()
 
-		_, match := models.FindMatch(matchid)
+		_, match := models.FindMatch(mid)
 		match.CalculateAll()
 	}
 
-	return c.Redirect(Match.Show, gameid, matchid)
+	return c.Redirect(Match.Show, gameid, mid)
+}
+
+// Delete delets a match from the database
+func (c Match) Delete(id int) revel.Result {
+	ok, match := models.FindMatch(id)
+	if ok {
+		match.Delete()
+		return c.Redirect(Game.Show, match.GameID)
+	}
+	return c.RenderText(fmt.Sprintf("Couldn't find a match with that id! (%d)", id))
 }

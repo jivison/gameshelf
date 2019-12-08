@@ -14,16 +14,22 @@ type Match struct {
 	HostUserName string
 }
 
+// Delete deletes a match from the database
+func (m Match) Delete() bool {
+	_, err := dbmap.Delete(&m)
+	return (err != nil)
+}
+
 // MatchScores return all the match scores associated with a match
-func (match Match) MatchScores() []MatchScore {
+func (m Match) MatchScores() []MatchScore {
 	var matchScores []MatchScore
-	dbmap.Select(&matchScores, "select * from match_scores where \"MatchID\"=$1", match.ID)
+	dbmap.Select(&matchScores, "select * from match_scores where \"MatchID\"=$1", m.ID)
 	return matchScores
 }
 
 // Players returns a slice of all the players in a game
-func (match Match) Players() map[string]bool {
-	scores := match.MatchScores()
+func (m Match) Players() map[string]bool {
+	scores := m.MatchScores()
 
 	players := make(map[string]bool)
 
@@ -35,13 +41,10 @@ func (match Match) Players() map[string]bool {
 }
 
 // AverageScore calculates the average score
-func (match Match) AverageScore() float32 {
+func (m Match) AverageScore() float32 {
 	var total float32
 
-	scores := match.MatchScores()
-
-	log.Print(scores)
-	log.Print(match)
+	scores := m.MatchScores()
 
 	if len(scores) == 1 {
 		return float32(math.Inf(1))
@@ -57,15 +60,15 @@ func (match Match) AverageScore() float32 {
 }
 
 // CalculateAll re-calculates all the matchscores final scores (because the average changes with every new player)
-func (match Match) CalculateAll() {
-	for _, matchScore := range match.MatchScores() {
-		matchScore.CalculateFinalScore(match)
+func (m Match) CalculateAll() {
+	for _, matchScore := range m.MatchScores() {
+		matchScore.CalculateFinalScore(m)
 	}
 }
 
 // Game returns the game associated with a game
-func (match Match) Game() *Game {
-	_, game := FindGame(match.GameID)
+func (m Match) Game() *Game {
+	_, game := FindGame(m.GameID)
 	return game
 }
 

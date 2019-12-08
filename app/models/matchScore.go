@@ -18,34 +18,34 @@ type MatchScore struct {
 }
 
 // Delete deletes a matchScore from the database
-func (matchScore MatchScore) Delete() bool {
-	_, err := dbmap.Delete(&matchScore)
+func (ms MatchScore) Delete() bool {
+	_, err := dbmap.Delete(&ms)
 	return (err != nil)
 }
 
 // CalculateFinalScore sets a match score's final score
-func (matchScore MatchScore) CalculateFinalScore(match Match) float32 {
+func (ms MatchScore) CalculateFinalScore(match Match) float32 {
 	average := match.AverageScore()
 
 	game := match.Game()
 
 	if average == float32(math.Inf(1)) {
-		matchScore.FinalScore = 100
-	} else if matchScore.IsWinner {
-		matchScore.FinalScore = (matchScore.BaseScore / average) * 110
+		ms.FinalScore = 100
+	} else if ms.IsWinner {
+		ms.FinalScore = (ms.BaseScore / average) * 110
 	} else {
-		matchScore.FinalScore = matchScore.BaseScore / average * 100
+		ms.FinalScore = ms.BaseScore / average * 100
 	}
 
-	matchScore.FinalScore = (game.ComplexityRating / 5) * matchScore.FinalScore
+	ms.FinalScore = (game.ComplexityRating / 5) * ms.FinalScore
 
-	dbmap.Update(&matchScore)
-	return matchScore.FinalScore
+	dbmap.Update(&ms)
+	return ms.FinalScore
 }
 
 // ComplexityRating returns the complexity rating for the associated game
-func (matchScore MatchScore) ComplexityRating() float32 {
-	ok, game := FindGame(matchScore.GameID)
+func (ms MatchScore) ComplexityRating() float32 {
+	ok, game := FindGame(ms.GameID)
 	if ok {
 		return game.ComplexityRating
 	}

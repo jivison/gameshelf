@@ -1,0 +1,32 @@
+{{set . "title" "All Games"}}
+{{template "header.html" .}}
+
+<script>
+    function searchUser() {
+        let username = document.getElementById("username").value
+        if (username === "") {
+            username = " "
+        }
+        window.location.href = `/user/${username}?from=search`
+    }
+</script>
+
+<div>
+    <div class="container">
+        <div class="row">
+          <div class="span6">
+            {{template "flash.html" .}}
+          </div>
+        </div>
+      </div>
+
+    {{with $field := field "username" .}}
+        <div class="form-field">
+            <label for="username">Username:</label>
+            <input type="text" name="username" id="username" />
+        </div>
+    {{end}}
+    <button onclick="searchUser()" type="submit">Search</button>
+</div>
+
+{{template "footer.html" .}}
