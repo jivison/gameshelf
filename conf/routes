@@ -40,6 +40,7 @@ GET     /signout                                App.Signout
 POST    /signout                                App.Signout
 GET     /addFriend                              User.FindFriend
 POST    /addFriend                              User.AddFriend
+POST    /acceptRequest                          User.AcceptRequest
 GET     /user/:username                         User.Show
 
 # Ignore favicon requests

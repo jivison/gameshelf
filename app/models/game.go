@@ -59,7 +59,7 @@ func FindGame(id int) (bool, *Game) {
 
 // FindGameByTitle finds a game by its title
 func FindGameByTitle(title, username string, storageVar *[]Game) {
-	dbmap.Select(storageVar, "select * from games where title=$1 and username=$1", title, username)
+	dbmap.Select(storageVar, "select * from games where \"Title\"=$1 and user_name=$1", title, username)
 }
 
 // CreateGame creates a game

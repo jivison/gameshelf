@@ -14,36 +14,86 @@ type User struct {
 	HashedPassword []byte
 }
 
+// FriendStatus is the relationship of two users
+type FriendStatus struct {
+	// Status can either be 'friends', 'sentRequest', 'receivedRequest', 'notFriends'
+	Status  string
+	Pending bool
+	// Blocked bool // Coming some time in the future
+}
+
 func (u User) String() string {
 	return fmt.Sprintf("{ USERNAME: %s | HASHEDPASSWORD: %s }", u.Username, u.HashedPassword)
+}
+
+// FriendStatus returns the relationship between users
+func (u User) FriendStatus(username string) FriendStatus {
+	var friends []Friend
+	dbmap.Select(&friends, "select * from friends where \"FrienderUsername\"=:friender and \"FriendedUsername\"=:friended", map[string]interface{}{
+		"friended": u.Username,
+		"friender": username,
+	})
+
+	log.Print(friends, u.Username, username)
+
+	if len(friends) != 0 {
+		if friends[0].Pending {
+			return FriendStatus{
+				Status:  "sentRequest",
+				Pending: true,
+			}
+		}
+		return FriendStatus{
+			Status:  "friends",
+			Pending: false,
+		}
+	}
+
+	var receivedRequest []Friend
+	dbmap.Select(&receivedRequest, "select * from friends where \"FriendedUsername\"=:friended and \"FrienderUsername\"=:friender", map[string]interface{}{
+		"friended": username,
+		"friender": u.Username,
+	})
+
+	if len(receivedRequest) != 0 {
+		return FriendStatus{
+			Status:  "receivedRequest",
+			Pending: true,
+		}
+	}
+
+	return FriendStatus{
+		Status:  "notFriends",
+		Pending: false,
+	}
 }
 
 // AllFriends returns a list of all the friends associated with that user (pending or not)
 func (u User) AllFriends() []Friend {
 	var friends []Friend
-	dbmap.Select(&friends, "select * from friends where \"FrienderID\"=$1", u.Username)
+	dbmap.Select(&friends, "select * from friends where \"FrienderUsername\"=$1", u.Username)
 	return friends
 }
 
 // Friends returns a list of all the friends associated with that user (that aren't pending)
 func (u User) Friends() []Friend {
 	var friends []Friend
-	dbmap.Select(&friends, "select * from friends where \"FrienderID\"=$1 AND \"Pending\"='f'", u.Username)
+	dbmap.Select(&friends, "select * from friends where \"FrienderUsername\"=$1 AND \"Pending\"='f'", u.Username)
 	return friends
 }
 
-// PendingFriends returns a list of all the friends associated with that user (that are pending)
+// SentFriendRequests returns a list of all the friends associated with that user (that are pending)
 // (ie. the ones the user has sent that haven't been accepted)
-func (u User) PendingFriends() []Friend {
+func (u User) SentFriendRequests() []Friend {
 	var friends []Friend
-	dbmap.Select(&friends, "select * from friends where \"FrienderID\"=$1 AND \"Pending\"='t'", u.Username)
+	dbmap.Select(&friends, "select * from friends where \"FrienderUsername\"=$1 AND \"Pending\"='t'", u.Username)
 	return friends
 }
 
 // PendingFriendRequests returns a list of all pending friends that need to be accepted
 func (u User) PendingFriendRequests() []Friend {
 	var friends []Friend
-	dbmap.Select(&friends, "select * from friends where \"FriendedID\"=$1 AND \"Pending\"='t'", u.Username)
+	dbmap.Select(&friends, "select * from friends where \"FriendedUsername\"=$1 AND \"Pending\"='t'", u.Username)
 	return friends
 }
 

@@ -3,7 +3,6 @@ package controllers
 import (
 	"fmt"
 	"gameshelf/app/models"
-	"log"
 	"regexp"
 
 	"github.com/revel/revel"
@@ -51,11 +50,16 @@ func (c User) Create(username, password, verifyPassword, firstName string) revel
 	return c.Redirect(App.Index)
 }
 
+// Show displays a user and provides friending options
 func (c User) Show(username string, from string) revel.Result {
 	ok, user := models.FindUser(username)
-	log.Print(ok)
 	if ok == true {
-		return c.Render(user)
+
+		currentUser, _ := c.Session.Get("user")
+
+		status := user.FriendStatus(currentUser.(string))
+
+		return c.Render(user, status)
 	}
 	if from == "search" {
 		c.Flash.Error("Couldn't find that user!")
@@ -67,12 +71,28 @@ func (c User) Show(username string, from string) revel.Result {
 
 // FindFriend displays the page to make a friend
 func (c User) FindFriend() revel.Result {
-	return c.Render()
+	username, _ := c.Session.Get("user")
+	ok, user := models.FindUser(username.(string))
+	if !ok {
+		return c.RenderText("You need to be signed in to access this!")
+	}
+	friends := user.Friends()
+	pendingRequests := user.PendingFriendRequests()
+	sentRequests := user.SentFriendRequests()
+
+	return c.Render(friends, pendingRequests, sentRequests)
 }
 
 // AddFriend creates a friend request
 func (c User) AddFriend(username string) revel.Result {
-	sourceUser, _ := c.Session.Get("user")
-	models.CreateFriend(sourceUser.(string), username)
-	return c.RenderText("Success")
+	sourceUsername, _ := c.Session.Get("user")
+	models.CreateFriend(sourceUsername.(string), username)
+	return c.Redirect(User.Show, username)
+}
+
+// AcceptRequest accepts a pending request
+func (c User) AcceptRequest(username string) revel.Result {
+	sourceUsername, _ := c.Session.Get("user")
+	models.FindAndAcceptRequest(username, sourceUsername.(string))
+	return c.Redirect(User.Show, username)
 }

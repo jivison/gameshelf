@@ -11,22 +11,60 @@
     }
 </script>
 
+{{if len .pendingRequests }}
+    <h2>Pending Friend Requests</h2>
+    <ul>
+        {{range .pendingRequests}}
+            <li>
+                <a href="/user/{{.FrienderUsername}}">{{.FrienderUsername}}</a>
+                <form action="/acceptRequest" method="post">
+                    <input type="hidden" name="username" value="{{.FrienderUsername}}">
+                    <button type="submit">Accept</button>
+                </form>
+            </li>
+        {{end}}
+    </ul>
+{{end}}
+
+{{if len .sentRequests }}
+    <h2>Sent Friend Requests</h2>
+    <ul>
+        {{range .sentRequests}}
+            <li>
+                <a href="/user/{{.FriendedUsername}}">{{.FriendedUsername}}</a>
+            </li>
+        {{end}}
+    </ul>
+{{end}}
+
+
 <div>
+    <h2>Add a new friend</h2>
     <div class="container">
         <div class="row">
-          <div class="span6">
+            <div class="span6">
             {{template "flash.html" .}}
-          </div>
         </div>
+    </div>
       </div>
-
-    {{with $field := field "username" .}}
+      
+      {{with $field := field "username" .}}
         <div class="form-field">
             <label for="username">Username:</label>
             <input type="text" name="username" id="username" />
         </div>
-    {{end}}
-    <button onclick="searchUser()" type="submit">Search</button>
+        {{end}}
+        <button onclick="searchUser()" type="submit">Search</button>
 </div>
 
 {{template "footer.html" .}}
+{{if len .friends }}
+    <h2>Friends</h2>
+    <ul>
+        {{range .friends}}
+            <li>
+                <a href="/user/{{.FriendedUsername}}">{{.FriendedUsername}}</a>
+            </li>
+        {{end}}
+    </ul>
+{{end}}
