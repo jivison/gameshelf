@@ -29,4 +29,8 @@
     <h4>You and {{.user.FirstName}} are friends! 🎩</h4>
 {{end}}
 
+{{if eq .status.Status "sameUser"}}
+    <h4>This is you!</h4>
+{{end}}
+
 {{template "footer.html" .}}

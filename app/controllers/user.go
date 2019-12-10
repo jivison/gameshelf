@@ -36,6 +36,10 @@ func (c User) Create(username, password, verifyPassword, firstName string) revel
 		return c.Redirect(User.SignUp)
 	}
 
+	if firstName == "" {
+		firstName = username
+	}
+
 	user := models.User{
 		Username:  username,
 		Password:  password,

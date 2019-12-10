@@ -43,6 +43,14 @@ POST    /addFriend                              User.AddFriend
 POST    /acceptRequest                          User.AcceptRequest
 GET     /user/:username                         User.Show
 
+# Groups
+GET     /group/new                              Group.New
+POST    /group/create                           Group.Create
+GET     /group/:id                              Group.Show
+GET     /groups                                 Group.Index
+POST    /group/:id/sendInvitation               Group.SendInvitation
+POST    /acceptInvitation                       Group.AcceptInvitation
+
 # Ignore favicon requests
 GET     /favicon.ico                            404
 

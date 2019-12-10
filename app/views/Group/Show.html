@@ -1,0 +1,32 @@
+{{set . "title" "View Group" }} {{template "header.html" .}}
+
+<h1>{{.group.Name}}</h1>
+
+{{if len .sentInvitations}}
+    <div>
+        <h3>Sent Invitiations</h3>
+        <ul>
+            {{range .sentInvitations}}
+                <li><a href="/user/{{.Username}}">{{.Username}}</a></li>
+            {{end}}
+        </ul>
+    </div>
+{{end}}
+
+
+<div>
+    <h3>Members</h3>
+    <ul>
+        {{range .members}}
+            <li><a href="/user/{{.Username}}">{{.FirstName}}</a></li>
+        {{end}}
+    </ul>
+
+    <h4>Add a member</h4>
+    <form action="/group/{{.group.ID}}/sendInvitation" method="post">
+        <label for="username">Username</label>
+        <input type="text" name="username" id="username">
+    </form>
+</div>
+
+{{template "footer.html" .}}

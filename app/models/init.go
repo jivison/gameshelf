@@ -45,4 +45,8 @@ func InitDB() {
 	dbmap.AddTableWithName(Match{}, "matches").SetKeys(true, "ID")
 	dbmap.AddTableWithName(MatchScore{}, "match_scores").SetKeys(true, "ID")
 	dbmap.AddTableWithName(Friend{}, "friends").SetKeys(true, "ID")
+	dbmap.AddTableWithName(Group{}, "groups").SetKeys(true, "ID")
+	dbmap.AddTableWithName(GroupMember{}, "group_members").SetKeys(true, "ID")
+
+	dbmap.ExpandSliceArgs = true
 }

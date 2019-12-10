@@ -16,7 +16,7 @@ type User struct {
 
 // FriendStatus is the relationship of two users
 type FriendStatus struct {
-	// Status can either be 'friends', 'sentRequest', 'receivedRequest', 'notFriends'
+	// Status can either be 'friends', 'sentRequest', 'receivedRequest', 'notFriends', or 'sameUser'
 	Status  string
 	Pending bool
 	// Blocked bool // Coming some time in the future
@@ -28,6 +28,13 @@ func (u User) String() string {
 
 // FriendStatus returns the relationship between users
 func (u User) FriendStatus(username string) FriendStatus {
+	if u.Username == username {
+		return FriendStatus{
+			Status:  "samePerson",
+			Pending: false,
+		}
+	}
+
 	var friends []Friend
 	dbmap.Select(&friends, "select * from friends where \"FrienderUsername\"=:friender and \"FriendedUsername\"=:friended", map[string]interface{}{
 		"friended": u.Username,
@@ -104,6 +111,43 @@ func (u User) Games() []Game {
 	return games
 }
 
+// Groups returns all the groups a user is in (that aren't pending)
+func (u User) Groups() []Group {
+	var groupMembers []GroupMember
+	dbmap.Select(&groupMembers, "select * from group_members where \"Username\"=$1  and \"Pending\"='f'", u.Username)
+
+	var groupIDs []int
+
+	for _, groupMember := range groupMembers {
+		groupIDs = append(groupIDs, groupMember.GroupID)
+	}
+
+	var groups []Group
+	dbmap.Select(&groups, "select * from groups where \"ID\" in (:ids)", map[string]interface{}{
+		"ids": groupIDs,
+	})
+
+	return groups
+}
+
+// PendingGroupInvitations returns all the pending group invitations
+func (u User) PendingGroupInvitations() []Group {
+	var invitations []GroupMember
+	dbmap.Select(&invitations, "select * from group_members where \"Username\"=$1 and \"Pending\"='t'", u.Username)
+
+	var groupIDs []int
+
+	for _, invitation := range invitations {
+		groupIDs = append(groupIDs, invitation.GroupID)
+	}
+
+	var groups []Group
+	dbmap.Select(&groups, "select * from groups where \"ID\" in (:ids)", map[string]interface{}{
+		"ids": groupIDs,
+	})
+	return groups
+}
+
 // FindUser finds a user by its username
 func FindUser(username string) (bool, *User) {
 	var users []User
@@ -156,7 +200,6 @@ func FriendableUsers(username string) []User {
 		blacklist = append(blacklist, friend.FrienderUsername)
 	}
 
-	dbmap.ExpandSliceArgs = true
 	dbmap.Select(&users, "SELECT \"Username\" FROM users WHERE \"Username\" NOT IN (:Blacklist)", map[string]interface{}{
 		"Blacklist": blacklist,
 	})
