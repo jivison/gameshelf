@@ -29,6 +29,22 @@
 
 <button onclick="window.location.href = '/game/{{.game.ID}}/match/new'">Add a match</button>
 
+{{if len .groupChoices}}
+    {{$choices := .groupChoices}}
+    <form action="/game/{{.game.ID}}/addToGroup" method="post">
+        {{with $field := field "groupID" .}}
+            <select name="{{$field.Name}}">
+                <option>Select one...</option>
+                {{range $choices}}
+                    {{option $field .ID .Name}}
+                {{end}}
+            </select>
+        {{end}}
+        <button type="submit">Add to group</button>
+    </form>
+{{end}}
+
+
 
 {{if (len .matches) ne 0}}
     <h2>Games of {{.game.Title}}</h2>

@@ -47,6 +47,7 @@ func InitDB() {
 	dbmap.AddTableWithName(Friend{}, "friends").SetKeys(true, "ID")
 	dbmap.AddTableWithName(Group{}, "groups").SetKeys(true, "ID")
 	dbmap.AddTableWithName(GroupMember{}, "group_members").SetKeys(true, "ID")
+	dbmap.AddTableWithName(GroupGame{}, "group_games").SetKeys(true, "ID")
 
 	dbmap.ExpandSliceArgs = true
 }

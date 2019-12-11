@@ -32,7 +32,9 @@ func (c Game) Show(id string) revel.Result {
 		sort.SliceStable(matches, func(i, j int) bool {
 			return matches[i].DatePlayed.Unix() > matches[j].DatePlayed.Unix()
 		})
-		return c.Render(game, matches)
+		username, _ := c.Session.Get("user")
+		groupChoices := game.UnaddedGroups(username.(string))
+		return c.Render(game, matches, groupChoices)
 	}
 	return c.RenderText("Couldn't find a game with that id!")
 }
@@ -135,4 +137,17 @@ func (c Game) Delete(id int) revel.Result {
 func (c Game) Edit(id int) revel.Result {
 	_, game := models.FindGame(id)
 	return c.Render(game)
+}
+
+// func (c Group) AddAllGamesToGroup(username string, groupID int) revel.Result {
+// }
+
+// AddToGroup adds a game to a group, creating a GroupGame in the process
+func (c Game) AddToGroup(id, groupID int) revel.Result {
+	ok, _ := models.FindGroup(groupID)
+	if ok {
+		models.CreateGroupGame(groupID, id)
+		return c.Redirect(Game.Show, id)
+	}
+	return c.RenderText("Couldn't find a group with that id! (%d)", groupID)
 }

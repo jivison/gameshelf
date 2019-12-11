@@ -37,6 +37,25 @@ func (g Group) SentInvitations() []GroupMember {
 	return invitations
 }
 
+// Games returns all the games associated with a group
+func (g Group) Games() []Game {
+	var groupGames []GroupGame
+	dbmap.Select(&groupGames, "select * from group_games where \"GroupID\"=$1", g.ID)
+
+	var gameIDs []int
+
+	for _, groupGame := range groupGames {
+		gameIDs = append(gameIDs, groupGame.GameID)
+	}
+
+	var games []Game
+
+	dbmap.Select(&games, "select * from games where \"ID\" in (:gameids)", map[string]interface{}{
+		"gameids": gameIDs,
+	})
+	return games
+}
+
 // CreateGroup creates a group in the database
 func CreateGroup(name string) (bool, *Group) {
 	group := &Group{

@@ -17,6 +17,7 @@ GET     /game/:id                               Game.Show
 GET     /game/:id/edit                          Game.Edit
 PATCH   /game/:id                               Game.Update
 DELETE  /game/:id                               Game.Delete
+POST    /game/:id/addToGroup                    Game.AddToGroup
 
 # Matches
 GET     /game/:gameid/match/new                 Match.New
@@ -50,6 +51,7 @@ GET     /group/:id                              Group.Show
 GET     /groups                                 Group.Index
 POST    /group/:id/sendInvitation               Group.SendInvitation
 POST    /acceptInvitation                       Group.AcceptInvitation
+POST    /unsendInvitation                       Group.UnsendInvitation
 
 # Ignore favicon requests
 GET     /favicon.ico                            404

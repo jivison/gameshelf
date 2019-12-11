@@ -40,6 +40,48 @@ func (g Game) Update() error {
 	return err
 }
 
+// UnaddedGroups returns all the groups a game hasn't been added to yet
+func (g Game) UnaddedGroups(username string) []Group {
+	_, user := FindUser(username)
+
+	usersGroups := user.Groups()
+
+	var options []Group
+
+	if len(usersGroups) == 0 {
+		return options
+	}
+
+	var groupGames []GroupGame
+	dbmap.Select(&groupGames, "select * from group_games where \"GameID\"=$1", g.ID)
+
+	// Blacklist is the list of group (ID)s that the game has already been added to
+	// Whitelist is the list of group (ID)s that the user is a part of
+	var blacklist []int
+	var whitelist []int
+
+	for _, groupGame := range groupGames {
+		blacklist = append(blacklist, groupGame.GroupID)
+	}
+
+	for _, group := range usersGroups {
+		whitelist = append(whitelist, group.ID)
+	}
+
+	if len(blacklist) == 0 {
+		dbmap.Select(&options, "select * from groups where \"ID\" in (:whitelist)", map[string]interface{}{
+			"whitelist": whitelist,
+		})
+	} else {
+		dbmap.Select(&options, "select * from groups where \"ID\" not in (:blacklist) and in (:whitelist)", map[string]interface{}{
+			"blacklist": blacklist,
+			"whitelist": whitelist,
+		})
+	}
+
+	return options
+}
+
 // FindGame finds a game by its id
 func FindGame(id int) (bool, *Game) {
 	obj, err := dbmap.Get(Game{}, id)

@@ -44,7 +44,8 @@ func (c Group) Show(id int) revel.Result {
 	if ok {
 		members := group.Members()
 		sentInvitations := group.SentInvitations()
-		return c.Render(group, members, sentInvitations)
+		games := group.Games()
+		return c.Render(group, members, sentInvitations, games)
 	}
 	return c.RenderText(fmt.Sprintf("Couldn't find a group with that ID! (%d)", id))
 }
@@ -65,6 +66,16 @@ func (c Group) SendInvitation(id int, username string) revel.Result {
 	ok, _ := models.FindGroup(id)
 	if ok {
 		models.CreateGroupInvitation(id, username)
+		return c.Redirect(Group.Show, id)
+	}
+	return c.RenderText(fmt.Sprintf("Couldn't find a group with that id! (%d)", id))
+}
+
+// UnsendInvitation deletes a pending group invitation
+func (c Group) UnsendInvitation(id int, username string) revel.Result {
+	ok, _ := models.FindGroup(id)
+	if ok {
+		models.DestroyGroupInvitation(id, username)
 		return c.Redirect(Group.Show, id)
 	}
 	return c.RenderText(fmt.Sprintf("Couldn't find a group with that id! (%d)", id))
