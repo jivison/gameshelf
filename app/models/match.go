@@ -9,6 +9,7 @@ import (
 // Match is a game of a board game
 type Match struct {
 	ID           int
+	GroupGameID  int
 	GameID       int
 	DatePlayed   time.Time
 	HostUserName string
@@ -73,11 +74,14 @@ func (m Match) Game() *Game {
 }
 
 // CreateMatch creates a match in the database
-func CreateMatch(gameID int, hostUserName string, datePlayed time.Time) (bool, *Match) {
+func CreateMatch(gameID int, groupID int, hostUserName string, datePlayed time.Time) (bool, *Match) {
+	groupGame := FindGroupGameFromIDs(gameID, groupID)
+
 	match := &Match{
 		GameID:       gameID,
 		HostUserName: hostUserName,
 		DatePlayed:   datePlayed,
+		GroupGameID:  groupGame.ID,
 	}
 
 	err := dbmap.Insert(match)

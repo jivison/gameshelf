@@ -56,6 +56,26 @@ func (g Group) Games() []Game {
 	return games
 }
 
+// AddAllGames adds all of a user's games a group
+func (g Group) AddAllGames(username string) {
+	var games []Game
+
+	var blacklist []int
+
+	for _, game := range g.Games() {
+		blacklist = append(blacklist, game.ID)
+	}
+
+	dbmap.Select(&games, "select * from games where \"ID\" not in (:blacklist) and user_name=:username ", map[string]interface{}{
+		"username":  username,
+		"blacklist": blacklist,
+	})
+
+	for _, game := range games {
+		CreateGroupGame(g.ID, game.ID)
+	}
+}
+
 // CreateGroup creates a group in the database
 func CreateGroup(name string) (bool, *Group) {
 	group := &Group{

@@ -18,10 +18,11 @@ GET     /game/:id/edit                          Game.Edit
 PATCH   /game/:id                               Game.Update
 DELETE  /game/:id                               Game.Delete
 POST    /game/:id/addToGroup                    Game.AddToGroup
+POST    /game/addAllToGroup                     Game.AddAllToGroup
 
 # Matches
-GET     /game/:gameid/match/new                 Match.New
-POST    /game/:gameid/match/create              Match.Create
+GET     /game/:gameid/:groupid/match/new        Match.New
+POST    /game/:gameid/:groupid/match/create     Match.Create
 GET     /match/:id                              Match.Show
 POST    /game/:gameid/match/:id/addScore        Match.AddScore
 POST    /game/:gameid/match/:mid/removeScore    Match.RemoveScore

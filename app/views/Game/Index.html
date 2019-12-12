@@ -1,6 +1,21 @@
 {{set . "title" "All Games"}}
 {{template "header.html" .}}
 
+{{if len .groupChoices}}
+    {{$choices := .groupChoices}}
+    <form action="/game/addAllToGroup" method="post">
+        {{with $field := field "groupID" .}}
+            <select name="{{$field.Name}}">
+                <option>Select one...</option>
+                {{range $choices}}
+                    {{option $field .ID .Name}}
+                {{end}}
+            </select>
+        {{end}}
+        <button type="submit">Add all games to group</button>
+    </form>
+{{end}}
+
 <div class="games" style="display: flex; flex-wrap: wrap;">
     {{range .games}}
     <div class="game-card" id="{{.ID}}" style="border: 2px solid black; padding: 1em; margin: 2em; border-radius: 1em; width: 30%" onclick="window.location.href = '/game/{{.ID}}'">

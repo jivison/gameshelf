@@ -41,11 +41,13 @@ func (c Group) Create(name string) revel.Result {
 // Show displays a group
 func (c Group) Show(id int) revel.Result {
 	ok, group := models.FindGroup(id)
+	username, _ := c.Session.Get("user")
+	username = username.(string)
 	if ok {
 		members := group.Members()
 		sentInvitations := group.SentInvitations()
 		games := group.Games()
-		return c.Render(group, members, sentInvitations, games)
+		return c.Render(group, members, sentInvitations, games, username)
 	}
 	return c.RenderText(fmt.Sprintf("Couldn't find a group with that ID! (%d)", id))
 }
@@ -53,6 +55,7 @@ func (c Group) Show(id int) revel.Result {
 // Index displays a list of groups
 func (c Group) Index() revel.Result {
 	username, _ := c.Session.Get("user")
+
 	_, user := models.FindUser(username.(string))
 
 	groups := user.Groups()

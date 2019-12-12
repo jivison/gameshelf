@@ -1,6 +1,6 @@
 {{set . "title" .game.Title }} {{template "header.html" .}}
 
-<h1>{{ .game.Title}}</h1>
+<h1>{{ .game.Title}} {{if .group}}(from {{.group.Name}}){{end}}</h1>
 {{if .game.Year}}
     <h3>{{ .game.Year }}</h3>
 {{end}}
@@ -27,7 +27,10 @@
     <button>Delete</button>
 </form>
 
-<button onclick="window.location.href = '/game/{{.game.ID}}/match/new'">Add a match</button>
+
+{{if .group}}
+    <button onclick="window.location.href = '/game/{{.game.ID}}/{{.group.ID}}/match/new'">Add a match</button>
+{{end}}
 
 {{if len .groupChoices}}
     {{$choices := .groupChoices}}

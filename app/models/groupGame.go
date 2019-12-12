@@ -26,3 +26,16 @@ func CreateGroupGame(groupID, gameID int) (bool, *GroupGame) {
 
 	return (err == nil), groupGame
 }
+
+// FindGroupGameFromIDs returns a group game from a game and a group ID
+func FindGroupGameFromIDs(gameID, groupID int) GroupGame {
+	var groupGames []GroupGame
+	dbmap.Select(&groupGames, "select * from group_games where \"GameID\"=:gameid and \"GroupID\"=:groupid", map[string]interface{}{
+		"gameid":  gameID,
+		"groupid": groupID,
+	})
+	if len(groupGames) > 0 {
+		return groupGames[0]
+	}
+	return GroupGame{}
+}

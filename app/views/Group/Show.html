@@ -34,23 +34,38 @@
     </form>
 </div>
 
+{{$groupid := .group.ID}}
+{{$currentUsername := .username}}
+
 <div>
     {{if len .games}}
         <h3>{{.group.Name}} games</h3>
         <div style="display: flex; flex-wrap: wrap;">
             {{range .games}}
-                <div class="game-card" id="{{.ID}}" style="border: 2px solid black; padding: 1em; margin: 2em; border-radius: 1em; width: 15%" onclick="window.location.href = '/game/{{.ID}}'">
-                    {{if .ImgURL}}
-                        <img src="{{.ImgURL}}" alt="{{.Title}}">
+                <div class="game-card" id="{{.ID}}" style="border: 2px solid black; padding: 1em; margin: 2em; border-radius: 1em; width: 15%">
+                    <div onclick="window.location.href = '/game/{{.ID}}?group={{$groupid}}'">
+                        {{if .ImgURL}}
+                            <img src="{{.ImgURL}}" alt="{{.Title}}">
+                        {{end}}
+                        <h2>{{.Title}}</h2>
+                        {{if .Year}}
+                            <h3>({{.Year}})</h3>
+                        {{end}}
+                        {{if .BggID}}
+                            <h4>Board Game Geek ID: {{.BggID}}</h4>
+                        {{end}}
+                        ({{.Username}}'s game)
+                    </div>
+                    {{if eq $currentUsername .Username}}
+                        <form
+                            action="/group/{{$groupid}}/removeGame"
+                            method="post" 
+                            onsubmit="return confirm('Are you sure you want to remove this game from this group? All associated matches and scores will be lost!');"
+                        >
+                            <input type="hidden" name="gameID" value="{{.ID}}">
+                            <input type="submit" value="Remove from group">
+                        </form>
                     {{end}}
-                    <h2>{{.Title}}</h2>
-                    {{if .Year}}
-                        <h3>({{.Year}})</h3>
-                    {{end}}
-                    {{if .BggID}}
-                        <h4>Board Game Geek ID: {{.BggID}}</h4>
-                    {{end}}
-                    ({{.Username}}'s game)
                 </div>
             {{end}}
         </div>

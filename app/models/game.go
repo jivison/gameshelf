@@ -22,9 +22,12 @@ func (g Game) String() string {
 }
 
 // Matches returns all the matches associated with a game
-func (g Game) Matches() []Match {
+func (g Game) Matches(groupID int) []Match {
 	var matches []Match
-	dbmap.Select(&matches, "select * from matches where \"GameID\"=$1", g.ID)
+
+	groupGame := FindGroupGameFromIDs(g.ID, groupID)
+
+	dbmap.Select(&matches, "select * from matches where \"GroupGameID\"=$1", groupGame.ID)
 	return matches
 }
 
@@ -80,6 +83,15 @@ func (g Game) UnaddedGroups(username string) []Group {
 	}
 
 	return options
+}
+
+// UpdateAllMatches updates all matches associated to a game
+func (g Game) UpdateAllMatches() {
+	var matches []Match
+	dbmap.Select(&matches, "select * from matches where \"GameID\"=$1", g.ID)
+	for _, match := range matches {
+		match.CalculateAll()
+	}
 }
 
 // FindGame finds a game by its id

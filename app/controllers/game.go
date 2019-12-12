@@ -21,20 +21,23 @@ func (c Game) New() revel.Result {
 }
 
 // Show displays the details of a single game
-func (c Game) Show(id string) revel.Result {
-	numID, err := strconv.Atoi(id)
-	if err != nil {
-		return c.RenderError(err)
-	}
-	if ok, game := models.FindGame(numID); ok {
-		c.Log.Info(game.String())
-		matches := game.Matches()
-		sort.SliceStable(matches, func(i, j int) bool {
-			return matches[i].DatePlayed.Unix() > matches[j].DatePlayed.Unix()
-		})
+func (c Game) Show(id int, group int) revel.Result {
+	if ok, game := models.FindGame(id); ok {
+		var matches []models.Match
+
 		username, _ := c.Session.Get("user")
 		groupChoices := game.UnaddedGroups(username.(string))
-		return c.Render(game, matches, groupChoices)
+
+		if group != 0 {
+			_, group := models.FindGroup(group)
+			matches = game.Matches(group.ID)
+			sort.SliceStable(matches, func(i, j int) bool {
+				return matches[i].DatePlayed.Unix() > matches[j].DatePlayed.Unix()
+			})
+			return c.Render(game, matches, groupChoices, group)
+		}
+
+		return c.Render(game, groupChoices, matches)
 	}
 	return c.RenderText("Couldn't find a game with that id!")
 }
@@ -98,12 +101,13 @@ func (c Game) Index() revel.Result {
 	_, user := models.FindUser(username.(string))
 
 	games := user.Games()
+	groupChoices := user.Groups()
 
 	sort.SliceStable(games, func(i, j int) bool {
 		return games[i].Title < games[j].Title
 	})
 
-	return c.Render(games)
+	return c.Render(games, groupChoices)
 }
 
 // Update updates a game in the database
@@ -113,9 +117,7 @@ func (c Game) Update(id int, title, imgURL string, year, bggID int, complexityRa
 	if game.ComplexityRating != complexityRating {
 		game.ComplexityRating = complexityRating
 		game.Update()
-		for _, match := range game.Matches() {
-			match.CalculateAll()
-		}
+		game.UpdateAllMatches()
 	}
 
 	game.Title = title
@@ -139,8 +141,15 @@ func (c Game) Edit(id int) revel.Result {
 	return c.Render(game)
 }
 
-// func (c Group) AddAllGamesToGroup(username string, groupID int) revel.Result {
-// }
+// AddAllToGroup adds every single one of a user's games to a group
+func (c Game) AddAllToGroup(groupID int) revel.Result {
+	ok, group := models.FindGroup(groupID)
+	if ok {
+		username, _ := c.Session.Get("user")
+		group.AddAllGames(username.(string))
+	}
+	return c.Redirect(Game.Index)
+}
 
 // AddToGroup adds a game to a group, creating a GroupGame in the process
 func (c Game) AddToGroup(id, groupID int) revel.Result {
