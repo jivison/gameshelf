@@ -4,12 +4,15 @@
 
 <h2>Played {{timeagoinwords .match.DatePlayed}}</h2>
 
-{{ $gameid := .match.GameID }}
-{{ $matchid := .match.ID }}
+
 
 <ul>
     {{range .scores}}
-        <li>{{.PlayerDisplayName}} {{if .IsWinner}} 👑 {{end}}- {{displayfloat .FinalScore}} (from {{.BaseScore}}) <form action="/match/{{$matchid}}/removeScore" method="POST"><input type="hidden" name="id" value="{{.ID}}"><input type="submit" value="Delete"></form></li>
+        <li>{{.PlayerDisplayName}} {{if .IsWinner}} 👑 {{end}}- {{displayfloatasint .FinalScore}} (from {{.BaseScore}})
+            <form action="/match/removeScore/{{.ID}}" method="POST">
+                <input type="submit" value="Delete">
+            </form>
+        </li>
     {{end}}
 </ul>
 

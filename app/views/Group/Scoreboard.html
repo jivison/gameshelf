@@ -1,0 +1,11 @@
+{{set . "title" "Scoreboard" }} {{template "header.html" .}}
+
+<a href="/group/{{.group.ID}}">Back to group</a>
+
+<h1>{{.group.Name}} Scoreboard</h1>
+
+{{range .scoreboard.Scores}}
+    <li>{{.DisplayName}} - {{displayfloat .AvgScore}} (played {{.Count}} time{{pluralize .Count "" "s"}})</li>
+{{end}}
+
+{{template "footer.html" .}}

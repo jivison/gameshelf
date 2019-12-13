@@ -48,8 +48,12 @@ func init() {
 		return timeago.FromTime(t)
 	}
 
-	revel.TemplateFuncs["displayfloat"] = func(f float32) string {
+	revel.TemplateFuncs["displayfloatasint"] = func(f float32) string {
 		return fmt.Sprintf("%.0f", f)
+	}
+
+	revel.TemplateFuncs["displayfloat"] = func(f float32) string {
+		return fmt.Sprintf("%.1f", f)
 	}
 }
 

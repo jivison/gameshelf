@@ -2,12 +2,33 @@ package models
 
 import (
 	"log"
+	"sort"
 )
 
 // Group is a group of users
 type Group struct {
 	ID   int
 	Name string
+}
+
+// Scoreboard type represents a group's scoreboard
+type Scoreboard struct {
+	Scores []ScoreboardScore
+}
+
+// Sort sorts the scoreboard
+func (s Scoreboard) Sort() {
+	sort.SliceStable(s.Scores, func(i, j int) bool {
+		return s.Scores[i].AvgScore > s.Scores[j].AvgScore
+	})
+}
+
+// ScoreboardScore holds the individual player scores in a scoreboard
+type ScoreboardScore struct {
+	AggScore    float32
+	AvgScore    float32
+	Count       int
+	DisplayName string
 }
 
 // Members returns a list of users in a group
@@ -74,6 +95,61 @@ func (g Group) AddAllGames(username string) {
 	for _, game := range games {
 		CreateGroupGame(g.ID, game.ID)
 	}
+}
+
+// GroupGames returns all the groupGames associated with a group
+func (g Group) GroupGames() []GroupGame {
+	var groupGames []GroupGame
+	dbmap.Select(&groupGames, "select * from group_games where \"GroupID\"=$1", g.ID)
+	return groupGames
+}
+
+// MatchScores returns all the MatchScores associated with a group
+func (g Group) MatchScores() []MatchScore {
+	groupGames := g.GroupGames()
+
+	var whitelist []int
+
+	for _, gg := range groupGames {
+		whitelist = append(whitelist, gg.ID)
+	}
+
+	var matches []Match
+	dbmap.Select(&matches, "select * from matches where \"GroupGameID\" in (:whitelist)", map[string]interface{}{
+		"whitelist": whitelist,
+	})
+
+	var matchScores []MatchScore
+
+	for _, m := range matches {
+		matchScores = append(matchScores, m.MatchScores()...)
+	}
+
+	return matchScores
+}
+
+// Scoreboard returns a scoreboard of players' scores
+func (g Group) Scoreboard() Scoreboard {
+	tempScoreboard := make(map[string]*ScoreboardScore)
+
+	for _, ms := range g.MatchScores() {
+		if _, ok := tempScoreboard[ms.PlayerUserName]; !ok {
+			tempScoreboard[ms.PlayerUserName] = &ScoreboardScore{
+				DisplayName: ms.PlayerDisplayName,
+			}
+		}
+		tempScoreboard[ms.PlayerUserName].AggScore = ms.FinalScore
+		tempScoreboard[ms.PlayerUserName].Count++
+	}
+
+	scoreboard := Scoreboard{}
+
+	for player, scores := range tempScoreboard {
+		tempScoreboard[player].AvgScore = scores.AggScore / float32(scores.Count)
+		scoreboard.Scores = append(scoreboard.Scores, *tempScoreboard[player])
+	}
+
+	return scoreboard
 }
 
 // CreateGroup creates a group in the database

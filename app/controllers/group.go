@@ -95,3 +95,14 @@ func (c Group) AcceptInvitation(groupID int) revel.Result {
 	}
 	return c.RenderText(fmt.Sprintf("Couldn't find a group with that id! (%d)", groupID))
 }
+
+// Scoreboard displays a scoreboard of all the players and their scores
+func (c Group) Scoreboard(id int) revel.Result {
+	ok, group := models.FindGroup(id)
+	if ok {
+		scoreboard := group.Scoreboard()
+		scoreboard.Sort()
+		return c.Render(scoreboard, group)
+	}
+	return c.RenderText(fmt.Sprintf("Couldn't find a group with that id! (%d)", id))
+}

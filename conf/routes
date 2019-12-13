@@ -25,7 +25,7 @@ GET     /group/:gid/game/:id/match              Match.New
 POST    /group/:gid/game/:id/match              Match.Create
 GET     /match/:id                              Match.Show
 POST    /match/:id/addScore                     Match.AddScore
-POST    /match/:id/removeScore                  Match.RemoveScore
+POST    /match/removeScore/:id                  Match.RemoveScore
 DELETE  /match/:id/                             Match.Delete
 
 # Temporary routes.
@@ -53,6 +53,7 @@ GET     /groups                                 Group.Index
 POST    /group/:id/sendInvitation               Group.SendInvitation
 POST    /acceptInvitation                       Group.AcceptInvitation
 POST    /unsendInvitation                       Group.UnsendInvitation
+GET     /group/:id/scoreboard                   Group.Scoreboard
 
 # Ignore favicon requests
 GET     /favicon.ico                            404

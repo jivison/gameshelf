@@ -1,5 +1,9 @@
 {{set . "title" .game.Title }} {{template "header.html" .}}
 
+{{if .group}}
+    <a href="/group/{{.group.ID}}">Back to group</a>
+{{end}}
+
 <h1>{{ .game.Title}} {{if .group}}(from {{.group.Name}}){{end}}</h1>
 {{if .game.Year}}
     <h3>{{ .game.Year }}</h3>
