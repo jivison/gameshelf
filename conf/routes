@@ -21,11 +21,11 @@ POST    /game/:id/addToGroup                    Game.AddToGroup
 POST    /game/addAllToGroup                     Game.AddAllToGroup
 
 # Matches
-GET     /game/:gameid/:groupid/match/new        Match.New
-POST    /game/:gameid/:groupid/match/create     Match.Create
+GET     /group/:gid/game/:id/match              Match.New
+POST    /group/:gid/game/:id/match              Match.Create
 GET     /match/:id                              Match.Show
-POST    /game/:gameid/match/:id/addScore        Match.AddScore
-POST    /game/:gameid/match/:mid/removeScore    Match.RemoveScore
+POST    /match/:id/addScore                     Match.AddScore
+POST    /match/:id/removeScore                  Match.RemoveScore
 DELETE  /match/:id/                             Match.Delete
 
 # Temporary routes.

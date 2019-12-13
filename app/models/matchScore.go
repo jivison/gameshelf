@@ -53,7 +53,7 @@ func (ms MatchScore) ComplexityRating() float32 {
 }
 
 // CreateMatchScore creates a match score in the database
-func CreateMatchScore(match *Match, game *Game, playerUserName string, baseScore float32, isWinner bool) (bool, *MatchScore) {
+func CreateMatchScore(match *Match, gameID int, playerUserName string, baseScore float32, isWinner bool) (bool, *MatchScore) {
 	ok, player := FindUser(playerUserName)
 
 	if !ok {
@@ -62,7 +62,7 @@ func CreateMatchScore(match *Match, game *Game, playerUserName string, baseScore
 
 	matchScore := &MatchScore{
 		MatchID:           match.ID,
-		GameID:            game.ID,
+		GameID:            gameID,
 		PlayerUserName:    player.Username,
 		PlayerDisplayName: player.FirstName,
 		BaseScore:         baseScore,

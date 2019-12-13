@@ -39,3 +39,29 @@ func FindGroupGameFromIDs(gameID, groupID int) GroupGame {
 	}
 	return GroupGame{}
 }
+
+// FindGroupGame finds a group game from its ID
+func FindGroupGame(groupGameID int) (bool, *GroupGame) {
+	obj, err := dbmap.Get(GroupGame{}, groupGameID)
+
+	var groupGame *GroupGame
+
+	if err != nil {
+		log.Print("ERROR FindGroupGame: ")
+		log.Println(err)
+	} else {
+		groupGame = obj.(*GroupGame)
+	}
+
+	return (err == nil), groupGame
+
+}
+
+// GroupIDFromGroupGameID returns a groups id from a group game ID
+func GroupIDFromGroupGameID(groupGameID int) int {
+	ok, gg := FindGroupGame(groupGameID)
+	if ok {
+		return gg.GroupID
+	}
+	return 0
+}

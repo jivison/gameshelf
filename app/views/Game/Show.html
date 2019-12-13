@@ -29,7 +29,7 @@
 
 
 {{if .group}}
-    <button onclick="window.location.href = '/game/{{.game.ID}}/{{.group.ID}}/match/new'">Add a match</button>
+    <button onclick="window.location.href = '/group/{{.group.ID}}/game/{{.game.ID}}/match'">Add a match</button>
 {{end}}
 
 {{if len .groupChoices}}

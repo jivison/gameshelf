@@ -10,7 +10,7 @@
 </div>
 
 <h1>Add a game of {{.game.Title}}</h1>
-<form action="/game/{{.game.ID}}/{{.groupid}}/match/create" method="POST">
+<form action="/group/{{.gid}}/game/{{.game.ID}}/match" method="POST">
   {{with $field := field "datePlayed" .}}
     <div class="form-field">
         <label for="datePlayed">Date Played:</label>

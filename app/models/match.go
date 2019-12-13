@@ -15,17 +15,26 @@ type Match struct {
 	HostUserName string
 }
 
-// Delete deletes a match from the database
-func (m Match) Delete() bool {
-	_, err := dbmap.Delete(&m)
-	return (err != nil)
-}
-
 // MatchScores return all the match scores associated with a match
 func (m Match) MatchScores() []MatchScore {
 	var matchScores []MatchScore
 	dbmap.Select(&matchScores, "select * from match_scores where \"MatchID\"=$1", m.ID)
 	return matchScores
+}
+
+// Delete deletes a match from the database
+func (m Match) Delete() bool {
+	ms := m.MatchScores()
+
+	for _, matchScore := range ms {
+		matchScore.Delete()
+	}
+	_, err := dbmap.Delete(&m)
+	if err != nil {
+		log.Print("ERROR: (Match).Delete:\n")
+		log.Print(err)
+	}
+	return (err == nil)
 }
 
 // Players returns a slice of all the players in a game

@@ -1,6 +1,6 @@
 {{set . "title" "View Match" }} {{template "header.html" .}}
 
-<button onclick="window.location.href = '/game/{{ .match.GameID }}'">Back to game</button>
+<button onclick="window.location.href = '/game/{{ .match.GameID }}?group={{.groupid}}'">Back to game</button>
 
 <h2>Played {{timeagoinwords .match.DatePlayed}}</h2>
 
@@ -9,7 +9,7 @@
 
 <ul>
     {{range .scores}}
-        <li>{{.PlayerDisplayName}} {{if .IsWinner}} 👑 {{end}}- {{displayfloat .FinalScore}} (from {{.BaseScore}}) <form action="/game/{{$gameid}}/match/{{$matchid}}/removeScore" method="POST"><input type="hidden" name="id" value="{{.ID}}"><input type="submit" value="Delete"></form></li>
+        <li>{{.PlayerDisplayName}} {{if .IsWinner}} 👑 {{end}}- {{displayfloat .FinalScore}} (from {{.BaseScore}}) <form action="/match/{{$matchid}}/removeScore" method="POST"><input type="hidden" name="id" value="{{.ID}}"><input type="submit" value="Delete"></form></li>
     {{end}}
 </ul>
 
@@ -24,7 +24,7 @@
     </div>
   </div>
 
-<form action="/game/{{.match.GameID}}/match/{{.match.ID}}/addScore" method="POST">
+<form action="/match/{{.match.ID}}/addScore" method="POST">
     {{with $field := field "playerUserName" .}}
         <div class="form-field">
             <label for="playerUserName">Players User Name:</label>
