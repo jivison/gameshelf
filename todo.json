@@ -1,1 +1,1 @@
-{"items":[{"item":"Make shallower routes","completed":false},{"item":"Fix \"cannot convert nil interface to type *<type>\" error","completed":false},{"item":"Add validation to matchscores so that you can only add scores for people in the group","completed":false}]}
+{"items":[{"item":"Make shallower routes","completed":true},{"item":"Fix \"cannot convert nil interface to type *<type>\" error","completed":true},{"item":"Add validation to matchscores so that you can only add scores for people in the group","completed":true}]}

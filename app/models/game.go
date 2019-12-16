@@ -96,19 +96,14 @@ func (g Game) UpdateAllMatches() {
 
 // FindGame finds a game by its id
 func FindGame(id int) (bool, *Game) {
-	obj, err := dbmap.Get(Game{}, id)
+	var games []Game
 
-	var game *Game
+	dbmap.Select(&games, findQstring("games"), id)
 
-	if err != nil {
-		log.Print("ERROR FindGame: ")
-		log.Println(err)
-	} else {
-		game = obj.(*Game)
-		_, game.User = FindUser(game.Username)
+	if len(games) > 0 {
+		return true, &games[0]
 	}
-
-	return (err == nil), game
+	return false, &Game{}
 }
 
 // FindGameByTitle finds a game by its title

@@ -73,11 +73,27 @@ func (c Match) Show(id int) revel.Result {
 func (c Match) AddScore(id int, playerUserName string, baseScore float32, isWinner bool) revel.Result {
 	ok, match := models.FindMatch(id)
 	if ok {
-		players := match.Players()
+		blacklist := match.Players()
+		whitelist := make(map[string]bool)
 
-		if players[playerUserName] {
+		groupID := models.GroupIDFromGroupGameID(match.GroupGameID)
+		_, group := models.FindGroup(groupID)
+		members := group.Members()
+
+		for _, member := range members {
+			whitelist[member.Username] = true
+		}
+
+		if blacklist[playerUserName] {
 			c.Flash.Error("That player already has a score")
-			return c.Redirect(Match.Show, match.GameID, match.ID)
+			c.FlashParams()
+			return c.Redirect(Match.Show, match.ID)
+		}
+
+		if !whitelist[playerUserName] {
+			c.Flash.Error("That player isn't in this group")
+			c.FlashParams()
+			return c.Redirect(Match.Show, match.ID)
 		}
 
 		if ok, _ := models.CreateMatchScore(match, match.GameID, playerUserName, baseScore, isWinner); !ok {

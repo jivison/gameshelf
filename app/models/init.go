@@ -51,3 +51,7 @@ func InitDB() {
 
 	dbmap.ExpandSliceArgs = true
 }
+
+func findQstring(table string) string {
+	return fmt.Sprintf("select * from %s where \"ID\"=$1", table)
+}

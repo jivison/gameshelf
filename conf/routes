@@ -50,9 +50,9 @@ GET     /group/new                              Group.New
 POST    /group/create                           Group.Create
 GET     /group/:id                              Group.Show
 GET     /groups                                 Group.Index
-POST    /group/:id/sendInvitation               Group.SendInvitation
 POST    /acceptInvitation                       Group.AcceptInvitation
 POST    /unsendInvitation                       Group.UnsendInvitation
+POST    /group/:id/sendInvitation               Group.SendInvitation
 GET     /group/:id/scoreboard                   Group.Scoreboard
 
 # Ignore favicon requests

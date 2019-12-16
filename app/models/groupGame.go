@@ -41,19 +41,15 @@ func FindGroupGameFromIDs(gameID, groupID int) GroupGame {
 }
 
 // FindGroupGame finds a group game from its ID
-func FindGroupGame(groupGameID int) (bool, *GroupGame) {
-	obj, err := dbmap.Get(GroupGame{}, groupGameID)
+func FindGroupGame(id int) (bool, *GroupGame) {
+	var groupGames []GroupGame
 
-	var groupGame *GroupGame
+	dbmap.Select(&groupGames, findQstring("group_games"), id)
 
-	if err != nil {
-		log.Print("ERROR FindGroupGame: ")
-		log.Println(err)
-	} else {
-		groupGame = obj.(*GroupGame)
+	if len(groupGames) > 0 {
+		return true, &groupGames[0]
 	}
-
-	return (err == nil), groupGame
+	return false, &GroupGame{}
 
 }
 

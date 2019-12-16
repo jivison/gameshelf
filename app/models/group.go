@@ -170,8 +170,12 @@ func CreateGroup(name string) (bool, *Group) {
 
 // FindGroup finds a group by its ID
 func FindGroup(id int) (bool, *Group) {
-	obj, err := dbmap.Get(Group{}, id)
-	group := obj.(*Group)
+	var groups []Group
 
-	return (err == nil), group
+	dbmap.Select(&groups, findQstring("groups"), id)
+
+	if len(groups) > 0 {
+		return true, &groups[0]
+	}
+	return false, &Group{}
 }

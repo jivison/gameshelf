@@ -105,16 +105,12 @@ func CreateMatch(gameID int, groupID int, hostUserName string, datePlayed time.T
 
 // FindMatch finds a match from its id
 func FindMatch(id int) (bool, *Match) {
-	obj, err := dbmap.Get(Match{}, id)
+	var matches []Match
 
-	var match *Match
+	dbmap.Select(&matches, findQstring("matches"), id)
 
-	if err != nil {
-		log.Print("ERROR FindMatch: ")
-		log.Println(err)
-	} else {
-		match = obj.(*Match)
+	if len(matches) > 0 {
+		return true, &matches[0]
 	}
-
-	return (err == nil), match
+	return false, &Match{}
 }

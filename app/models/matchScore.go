@@ -83,16 +83,12 @@ func CreateMatchScore(match *Match, gameID int, playerUserName string, baseScore
 
 // FindMatchScore finds a match score by its ID
 func FindMatchScore(id int) (bool, *MatchScore) {
-	obj, err := dbmap.Get(MatchScore{}, id)
+	var matchScores []MatchScore
 
-	var matchScore *MatchScore
+	dbmap.Select(&matchScores, findQstring("match_scores"), id)
 
-	if err != nil {
-		log.Print("ERROR FindMatchScore: ")
-		log.Println(err)
-	} else {
-		matchScore = obj.(*MatchScore)
+	if len(matchScores) > 0 {
+		return true, &matchScores[0]
 	}
-
-	return (err == nil), matchScore
+	return false, &MatchScore{}
 }
