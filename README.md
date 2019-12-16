@@ -12,10 +12,10 @@ Built with revel, a high-productivity web framework for the [Go language](http:/
 
 Development of Gameshelf is split into 4 phases:
 
-    - **Phase 1**: Develop gameshelf in pure Revel/Go with views
-    - **Phase 2**: Switch to API only, returning JSON
-    - **Phase 3**: Integrate GraphQl
-    - **Phase 4**: Develop Typescript React frontend
+- **Phase 1**: Develop gameshelf in pure Revel/Go with views ✔️
+- **Phase 2**: Switch to API only, returning JSON
+- **Phase 3**: Integrate GraphQl
+- **Phase 4**: Develop Typescript React frontend
 
 ## Code Layout
 
