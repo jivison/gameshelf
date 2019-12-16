@@ -3,9 +3,9 @@ package controllers
 import (
 	"fmt"
 	"gameshelf/app/models"
+	"gameshelf/app/respond"
 	"math"
 	"sort"
-	"strconv"
 
 	"github.com/revel/revel"
 )
@@ -15,31 +15,30 @@ type Game struct {
 	*revel.Controller
 }
 
-// New serves a form to create a new game
-func (c Game) New() revel.Result {
-	return c.Render()
-}
-
 // Show displays the details of a single game
 func (c Game) Show(id int, group int) revel.Result {
 	if ok, game := models.FindGame(id); ok {
-		var matches []models.Match
 
-		username, _ := c.Session.Get("user")
-		groupChoices := game.UnaddedGroups(username.(string))
+		return respond.WithEntity(c, game)
 
-		if group != 0 {
-			_, group := models.FindGroup(group)
-			matches = game.Matches(group.ID)
-			sort.SliceStable(matches, func(i, j int) bool {
-				return matches[i].DatePlayed.Unix() > matches[j].DatePlayed.Unix()
-			})
-			return c.Render(game, matches, groupChoices, group)
-		}
+		// var matches []models.Match
 
-		return c.Render(game, groupChoices, matches)
+		// username, _ := c.Session.Get("user")
+		// groupChoices := game.UnaddedGroups(username.(string))
+
+		// if group != 0 {
+		// 	_, group := models.FindGroup(group)
+		// matches = game.Matches(group.ID)
+		// sort.SliceStable(matches, func(i, j int) bool {
+		// 	return matches[i].DatePlayed.Unix() > matches[j].DatePlayed.Unix()
+		// })
+		// return c.Render(game, matches, groupChoices, group)
+		// }
+
+		// return c.Render(game, groupChoices, matches)
 	}
-	return c.RenderText("Couldn't find a game with that id!")
+	errors := respond.NewErrors(fmt.Sprintf("Couldn't find a game with that id! (%d)", id))
+	return respond.WithError(c, 404, *errors)
 }
 
 func validateUniqueGame(title, username string, year int) bool {
@@ -60,12 +59,16 @@ func validateUniqueGame(title, username string, year int) bool {
 // Create creates a new game in the db
 func (c Game) Create(title, imgURL string, year, bggID int, complexityRating float64) revel.Result {
 
+	errors := respond.NewErrors()
+
 	username, _ := c.Session.Get("user")
 
 	c.Log.Infof("{ TITLE: %s | YEAR: %d | BGGID: %d | USERNAME: %s | IMGURL: %s | COMPLEXITYRATING: %f}", title, year, bggID, username.(string), imgURL, complexityRating)
 
 	if username != nil {
 		c.Validation.Required(validateUniqueGame(title, username.(string), year)).Message("Title can't match another game with the same year")
+	} else {
+		errors.Add("You must be signed in to create a game")
 	}
 
 	c.Validation.Required(title).Message("A game must have a title")
@@ -80,18 +83,20 @@ func (c Game) Create(title, imgURL string, year, bggID int, complexityRating flo
 
 	if c.Validation.HasErrors() {
 		c.Validation.Keep()
-		c.FlashParams()
-		return c.Redirect(Game.New)
-	}
 
-	if username != nil {
-		if ok, game := models.CreateGame(title, year, bggID, username.(string), imgURL, float32(complexityRating)); ok {
-			return c.Redirect(Game.Show, strconv.Itoa(game.ID))
+		errors.AddFromValidation(c.Validation.Errors)
+
+	} else {
+		if username != nil {
+			if ok, game := models.CreateGame(title, year, bggID, username.(string), imgURL, float32(complexityRating)); ok {
+				return respond.WithEntity(c, game)
+			}
 		}
+
 	}
 
-	c.FlashParams()
-	return c.Redirect(Game.New)
+	return respond.WithError(c, 422, *errors)
+
 }
 
 // Index lists every game
@@ -101,13 +106,14 @@ func (c Game) Index() revel.Result {
 	_, user := models.FindUser(username.(string))
 
 	games := user.Games()
-	groupChoices := user.Groups()
+	// groupChoices := user.Groups()
 
 	sort.SliceStable(games, func(i, j int) bool {
 		return games[i].Title < games[j].Title
 	})
 
-	return c.Render(games, groupChoices)
+	// return c.Render(games, groupChoices)
+	return respond.WithEntities(c, games)
 }
 
 // Update updates a game in the database
@@ -125,20 +131,17 @@ func (c Game) Update(id int, title, imgURL string, year, bggID int, complexityRa
 	game.BggID = bggID
 	game.ImgURL = imgURL
 	game.Update()
-	return c.Redirect(fmt.Sprintf("/game/%d", game.ID))
+
+	return respond.WithEntity(c, game)
 }
 
 // Delete deletes a game in the database
 func (c Game) Delete(id int) revel.Result {
 	_, game := models.FindGame(id)
-	game.Delete()
-	return c.Redirect(Game.Index)
-}
-
-// Edit renders the edit game page
-func (c Game) Edit(id int) revel.Result {
-	_, game := models.FindGame(id)
-	return c.Render(game)
+	if game.Delete() {
+		return respond.WithEntity(c, game)
+	}
+	return respond.WithError(c, 400, *respond.NewErrors("Couldn't delete that game"))
 }
 
 // AddAllToGroup adds every single one of a user's games to a group
@@ -147,8 +150,13 @@ func (c Game) AddAllToGroup(groupID int) revel.Result {
 	if ok {
 		username, _ := c.Session.Get("user")
 		group.AddAllGames(username.(string))
+		return respond.WithMessage(c, "Added all games")
 	}
-	return c.Redirect(Game.Index)
+	return respond.WithError(
+		c,
+		404,
+		*respond.NewErrors(fmt.Sprintf("Couldn't find a group with that id! (%d)", groupID)),
+	)
 }
 
 // AddToGroup adds a game to a group, creating a GroupGame in the process
@@ -158,5 +166,9 @@ func (c Game) AddToGroup(id, groupID int) revel.Result {
 		models.CreateGroupGame(groupID, id)
 		return c.Redirect(Game.Show, id)
 	}
-	return c.RenderText("Couldn't find a group with that id! (%d)", groupID)
+	return respond.WithError(
+		c,
+		404,
+		*respond.NewErrors(fmt.Sprintf("Couldn't find a group with that id! (%d)", groupID)),
+	)
 }

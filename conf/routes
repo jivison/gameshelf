@@ -7,53 +7,49 @@ module:testrunner
 # module:jobs
 
 
-GET     /                                       App.Index
-
 # Games
-GET     /game/new                               Game.New
-POST    /game/create                            Game.Create
-GET     /games                                  Game.Index
-GET     /game/:id                               Game.Show
-GET     /game/:id/edit                          Game.Edit
-PATCH   /game/:id                               Game.Update
-DELETE  /game/:id                               Game.Delete
-POST    /game/:id/addToGroup                    Game.AddToGroup
-POST    /game/addAllToGroup                     Game.AddAllToGroup
+POST    /api/game/create                            Game.Create
+GET     /api/games                                  Game.Index
+GET     /api/game/:id                               Game.Show
+PATCH   /api/game/:id                               Game.Update
+DELETE  /api/game/:id                               Game.Delete
+POST    /api/game/:id/addToGroup                    Game.AddToGroup
+POST    /api/game/addAllToGroup                     Game.AddAllToGroup
 
 # Matches
-GET     /group/:gid/game/:id/match              Match.New
-POST    /group/:gid/game/:id/match              Match.Create
-GET     /match/:id                              Match.Show
-POST    /match/:id/addScore                     Match.AddScore
-POST    /match/removeScore/:id                  Match.RemoveScore
-DELETE  /match/:id/                             Match.Delete
+GET     /api/group/:gid/game/:id/match              Match.New
+POST    /api/group/:gid/game/:id/match              Match.Create
+GET     /api/match/:id                              Match.Show
+POST    /api/match/:id/addScore                     Match.AddScore
+POST    /api/match/removeScore/:id                  Match.RemoveScore
+DELETE  /api/match/:id/                             Match.Delete
 
 # Temporary routes.
-POST    /game/:id/edit                          Game.Update
-POST    /game/:id/delete                        Game.Delete
-POST    /match/:id/delete                       Match.Delete
+POST    /api/game/:id/edit                          Game.Update
+POST    /api/game/:id/delete                        Game.Delete
+POST    /api/match/:id/delete                       Match.Delete
 
 # Users
-GET     /signin                                 App.SignIn
-GET     /signup                                 User.SignUp
-POST    /signup                                 User.Create
-POST    /signin                                 App.Login
-GET     /signout                                App.Signout
-POST    /signout                                App.Signout
-GET     /addFriend                              User.FindFriend
-POST    /addFriend                              User.AddFriend
-POST    /acceptRequest                          User.AcceptRequest
-GET     /user/:username                         User.Show
+GET     /api/signin                                 App.SignIn
+GET     /api/signup                                 User.SignUp
+POST    /api/signup                                 User.Create
+POST    /api/signin                                 App.Login
+GET     /api/signout                                App.Signout
+POST    /api/signout                                App.Signout
+GET     /api/addFriend                              User.FindFriend
+POST    /api/addFriend                              User.AddFriend
+POST    /api/acceptRequest                          User.AcceptRequest
+GET     /api/user/:username                         User.Show
 
 # Groups
-GET     /group/new                              Group.New
-POST    /group/create                           Group.Create
-GET     /group/:id                              Group.Show
-GET     /groups                                 Group.Index
-POST    /acceptInvitation                       Group.AcceptInvitation
-POST    /unsendInvitation                       Group.UnsendInvitation
-POST    /group/:id/sendInvitation               Group.SendInvitation
-GET     /group/:id/scoreboard                   Group.Scoreboard
+GET     /api/group/new                              Group.New
+POST    /api/group/create                           Group.Create
+GET     /api/group/:id                              Group.Show
+GET     /api/groups                                 Group.Index
+POST    /api/acceptInvitation                       Group.AcceptInvitation
+POST    /api/unsendInvitation                       Group.UnsendInvitation
+POST    /api/group/:id/sendInvitation               Group.SendInvitation
+GET     /api/group/:id/scoreboard                   Group.Scoreboard
 
 # Ignore favicon requests
 GET     /favicon.ico                            404

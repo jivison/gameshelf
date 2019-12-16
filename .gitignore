@@ -3,3 +3,4 @@ tmp/
 routes/
 
 db/config.hjson
+conf/app.conf
