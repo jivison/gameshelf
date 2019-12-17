@@ -3,6 +3,7 @@ package controllers
 import (
 	"fmt"
 	"gameshelf/app/models"
+	"gameshelf/app/respond"
 	"regexp"
 
 	"github.com/revel/revel"
@@ -14,26 +15,26 @@ type User struct {
 	*revel.Controller
 }
 
-// SignUp renders the sign up page
-func (c User) SignUp() revel.Result {
-	return c.Render()
-}
+func (c User) SignUp() revel.Result { return c.Render() }
 
 // Create creates a persisted user
 func (c User) Create(username, password, verifyPassword, firstName string) revel.Result {
-	c.Validation.Required(username)
-	c.Validation.MinSize(username, 4)
-	c.Validation.MaxSize(username, 20)
-	c.Validation.Match(username, regexp.MustCompile("^\\w*$"))
 
-	c.Validation.Required(password)
-	c.Validation.MinSize(password, 3)
-	c.Validation.MaxSize(password, 30)
+	c.Validation.Required(username).Message("Username is required")
+	c.Validation.MinSize(username, 4).Message("Username must be at least 4 characters long")
+	c.Validation.MaxSize(username, 40).Message("Username must be less than 40 characters")
+	c.Validation.Match(username, regexp.MustCompile("^\\w*$")).Message("Username must not include special characters other than _ or .")
+
+	c.Validation.Required(password).Message("Password is required")
+	c.Validation.MinSize(password, 3).Message("Password must be longer than 2 characters")
+	c.Validation.MaxSize(password, 40).Message("Password must be less than 40 characters")
+
+	errors := respond.NewErrors()
 
 	if c.Validation.HasErrors() {
 		c.Validation.Keep()
-		c.FlashParams()
-		return c.Redirect(User.SignUp)
+		errors.AddFromValidation(c.Validation.Errors)
+		return respond.WithError(c, 422, *errors)
 	}
 
 	if firstName == "" {
@@ -51,7 +52,7 @@ func (c User) Create(username, password, verifyPassword, firstName string) revel
 
 	c.Session["user"] = user.Username
 
-	return c.Redirect(App.Index)
+	return respond.WithEntity(c, user)
 }
 
 // Show displays a user and provides friending options

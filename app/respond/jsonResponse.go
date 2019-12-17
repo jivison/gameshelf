@@ -15,12 +15,12 @@ type JSONErrors struct {
 }
 
 // Add adds errors to a response
-func (j JSONErrors) Add(errors ...string) {
+func (j *JSONErrors) Add(errors ...string) {
 	j.Errors = append(j.Errors, errors...)
 }
 
 // AddFromValidation adds errors to a response from a revel validation
-func (j JSONErrors) AddFromValidation(errors []*revel.ValidationError) {
+func (j *JSONErrors) AddFromValidation(errors []*revel.ValidationError) {
 	for _, vError := range errors {
 		j.Add(vError.Message)
 	}

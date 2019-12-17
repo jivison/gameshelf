@@ -32,8 +32,8 @@ POST    /api/match/:id/delete                       Match.Delete
 # Users
 GET     /api/signin                                 App.SignIn
 GET     /api/signup                                 User.SignUp
-POST    /api/signup                                 User.Create
 POST    /api/signin                                 App.Login
+POST    /api/signup                                 User.Create
 GET     /api/signout                                App.Signout
 POST    /api/signout                                App.Signout
 GET     /api/addFriend                              User.FindFriend

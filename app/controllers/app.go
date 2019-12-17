@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"gameshelf/app/models"
+	"gameshelf/app/respond"
 
 	"golang.org/x/crypto/bcrypt"
 
@@ -13,12 +14,8 @@ type App struct {
 	*revel.Controller
 }
 
-// Index renders the index page
-func (c App) Index() revel.Result {
-	username, _ := c.Session.Get("user")
-	fulluser, _ := c.Session.Get("fulluser")
-	return c.Render(username, fulluser)
-}
+func (c App) Index() revel.Result  { return c.Render() }
+func (c App) SignIn() revel.Result { return c.Render() }
 
 func (c App) connected() *models.User {
 	if c.ViewArgs["user"] != nil {
@@ -53,27 +50,27 @@ func (c App) getUser(username string) (user *models.User) {
 
 }
 
-// Login logs the user in (does not display the page)
-func (c App) Login(username, password string) revel.Result {
-	user := c.getUser(username)
-	if user != nil {
-		err := bcrypt.CompareHashAndPassword(user.HashedPassword, []byte(password))
-
-		if err == nil {
-			c.Session["user"] = username
-			c.Flash.Success("Welcome, " + username)
-			return c.Redirect(App.Index)
-
-		}
-	}
-	c.Flash.Out["username"] = username
-	c.Flash.Error("Login Failed")
-	return c.Redirect(App.SignIn)
+type LoginParams struct {
+	username string
+	password string
 }
 
-// SignIn displays the signin page
-func (c App) SignIn() revel.Result {
-	return c.Render()
+// Login logs the user in
+func (c App) Login(body LoginParams) revel.Result {
+	user := c.getUser(body.username)
+	errors := respond.NewErrors()
+
+	if user != nil {
+		err := bcrypt.CompareHashAndPassword(user.HashedPassword, []byte(body.password))
+
+		if err == nil {
+			c.Session["user"] = body.username
+			return respond.WithEntity(c, user)
+		}
+		errors.Add(err.Error())
+	}
+	errors.Add("Login failed")
+	return respond.WithError(c, 400, *errors)
 }
 
 // SignOut signs the user out
@@ -81,5 +78,5 @@ func (c App) SignOut() revel.Result {
 	for k := range c.Session {
 		delete(c.Session, k)
 	}
-	return c.Redirect(App.Index)
+	return respond.WithMessage(c, "Logged out")
 }

@@ -14,7 +14,7 @@ func WithError(c controller, status int, errors JSONErrors) revel.Result {
 	})
 }
 
-// WithMessage responds with an error
+// WithMessage responds with a message
 func WithMessage(c controller, messages ...string) revel.Result {
 	return c.RenderJSON(MessageResponse{
 		JSONResponse{Status: 200},
@@ -22,7 +22,7 @@ func WithMessage(c controller, messages ...string) revel.Result {
 	})
 }
 
-// WithEntity responds with an error
+// WithEntity responds with an entity
 func WithEntity(c controller, entity interface{}) revel.Result {
 	return c.RenderJSON(SingleEntityResponse{
 		JSONResponse{Status: 200},
@@ -30,7 +30,7 @@ func WithEntity(c controller, entity interface{}) revel.Result {
 	})
 }
 
-// WithEntities responds with an error
+// WithEntities responds with multiple entities
 func WithEntities(c controller, entities ...interface{}) revel.Result {
 	return c.RenderJSON(MultipleEntityResponse{
 		JSONResponse{Status: 200},

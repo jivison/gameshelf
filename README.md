@@ -45,4 +45,7 @@ The directory structure of a generated Revel application:
 
     tests/            Test suites
 
+## API
 
+The gameshelf api endpoint is /api. 
+Revel does not support JSON-bodied POST requests, so requests should be sent in `application/x-www-form-urlencoded` content type.
